@@ -1,1 +1,2 @@
-./static/video/*
+/static/video/
+/node_modules/
