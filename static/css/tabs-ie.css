@@ -1,0 +1,7 @@
+.TabPanel .Header .Section.Active {	
+	color: white;
+    font-weight: bold;    
+    background: url(../img/tab/tab-bg.png) center center repeat-x;
+    border: 1px solid #c14240;
+    text-shadow: #a01f0f 1px 1px 1px; 
+}

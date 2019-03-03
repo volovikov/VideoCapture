@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video-capture project</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/form.css">
+  <link rel="stylesheet" href="css/tabs.css">
+  <link rel="stylesheet" href="css/messages.css">
+  <link rel="stylesheet" href="css/messages-ie.css">
+  <!--[if IE]>
+  <link rel="stylesheet" href="css/tabs-ie.css" />
+  <![endif]-->
+  <link rel="stylesheet" href="css/table.css">
+  <!--[if IE]>
+  <link rel="stylesheet" href="css/table-ie.css" />
+  <![endif]-->
+  <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+  <script src="socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="https://cdn.webrtc-experiment.com/MediaStreamRecorder.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+  <script src="js/main-vue-components.js"></script>
+  <style>
+  </style>
+</head>
+<body>
+  <div id="main-panel" style="margin: 1em auto">
+    <main-tab bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
+        <main-tab-item title="Регистрация">
+            <h1>Контроль</h1>
+            <main-form class="Flat">
+                <main-form-field ref='video-device-selector'>
+                    <main-form-label>Выберите камеру</main-form-label>
+                    <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
+                </main-form-field>
+                <main-form-field ref="video-size-selector" >
+                    <main-form-label>Выберите размер</main-form-label>
+                    <main-form-select @select="onSelectVideoSize" :list='videoSizeList'></main-form-select>
+                </main-form-field>
+                <main-form-field ref="video-save-interval-selector">
+                    <main-form-label>Интервал записи (сек)</main-form-label>
+                    <main-form-select @select="onSelectVideoInterval" :list='videoSaveIntervalList'></main-form-select>
+                </main-form-field>
+                <main-form-field>
+                    <main-form-label>Просмотр</main-form-label>
+                    <div id="container"></div>
+                </main-form-field>
+                <main-button-group>
+                    <main-button selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
+                </main-button-group>                
+            </main-form>
+        </main-tab-item>   
+        <main-tab-item title="Просмотр">
+            <main-form ref="video-control-form" class="Flat" style="margin-bottom: 2em">
+                <main-form-field>
+                    <main-form-label>День</main-form-label>
+                    <main-form-select @select="onSelectVideoCaptureDay" name="videoCaptureDay" :list="videoCaptureDayList"></main-form-select>
+                </main-form-field>
+            </main-form>
+            <main-table :columns="videoCaptureRecordTblCols" :data="videoCaptureRecordTblData"></main-table>
+        </main-tab-item>
+    </main-tab>
+  </div>
+  <script>
+    var mainPanel = new Vue({
+      el: '#main-panel',
+      data: function() {
+        return {
+          videoCaptureDayList: [],
+          videoCaptureRecordTblData: [],
+          videoCaptureRecordTblCols: ['Время', 'Интервал', 'Файл'],
+          activeVideoCaptureDay: null,
+          width: null,
+          height: null,
+          videoElement: null,
+          isVideSaveNow: false,
+          mediaRecorder: null,
+          videoCameraList: [],
+          videoSaveIntervalList: [{
+            key: 5000,
+            value: '5 сек'
+          },{
+            key: 10000,
+            value: '10 сек'
+          },{
+            key: 30000,
+            value: '30 сек',
+            selected: true
+          },{
+            key: 60000,
+            value: '1 мин'  
+          }],
+          videoSizeList: [{
+            key: '320x240',
+            value: '320x240',
+            width: 320,
+            height: 240,
+          },{
+            key: '640x480',
+            value: '640x480',            
+            width: 640,
+            height: 480,   
+            selected: true
+          },{
+            key: '800x600',
+            value: '800x600',
+            width: 800,
+            height: 600        
+          },{
+            key: '1024x768',
+            value: '1024x768',
+            width: 1024,
+            height: 768,            
+          }],
+          videoRecordDeviceId: null,
+          audioRecordDeviceId: null,          
+          saveMediaSettings: {
+            audio: true,
+            video: {
+                deviceId: {exact: null},
+                width: {exact: null},
+                height: {exact: null}
+            }
+          },
+          saveInterval: 5000
+        }
+      },
+      watch: {
+          activeVideoCaptureDay: function(v) {
+            var that = this;
+            
+            this.getVideoCaptureRecordList(v, function(data) {
+                that.videoCaptureRecordTblData = data.map(function(r) {
+                    return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
+                });
+            });
+          },
+          width: function(v) {
+              this.saveMediaSettings.video.width.exact = v;
+          },
+          height: function(v) {
+              this.saveMediaSettings.video.height.exact = v;
+          },
+          isVideSaveNow: function(v) {
+              var fields = [
+                  this.$refs['video-size-selector'],
+                  this.$refs['video-save-interval-selector'],
+                  this.$refs['video-device-selector']
+              ];              
+              if (v) {
+                  fields.forEach(function(f) {
+                      f.setDisableOn();
+                  });
+              } else {
+                  fields.forEach(function(f) {
+                      f.setDisableOff();
+                  });
+              }
+          },
+          videoRecordDeviceId: function(v) {
+              this.saveMediaSettings.video.deviceId.exact = v;
+          }
+      },
+      computed: {
+        formHeight: function() {
+            return this.height + 90;
+        },
+        formWidth: function() {
+            return this.width + 100;
+        },
+        toggleBtnText: function() {
+            if (this.isVideSaveNow) {
+                return 'Остановить';
+            } else {
+                return 'Записывать';
+            }
+        }
+      },
+      mounted: function() {
+        var that = this;
+        
+        this.getVideoCaptureDayList(function(data) {
+            that.videoCaptureDayList = data;
+            that.activeVideoCaptureDay = data[0].key;
+        });
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                devices.forEach(function(device, index) {
+                    if (device.kind == 'videoinput') {
+                        that.videoCameraList.push({
+                            key: device.deviceId,
+                            value: device.label
+                        });
+                    }
+                });
+                that.videoCameraList.forEach(function(r, i) {
+                    if (i == 0) {
+                        that.videoRecordDeviceId = r.key;
+                    }
+                });
+            });
+            
+        this.videoSizeList.forEach(function(r) {
+            if (r.selected) {
+                that.width = r.width;
+                that.height = r.height;
+            }
+        });
+        this.videoSaveIntervalList.forEach(function(r) {
+            if (r.selected) {
+                that.saveInterval = r.key;
+            }
+        });
+        this.videoElement = document.createElement('video');     
+        this.videoElement = mergeProps(this.videoElement, {
+            controls: true,
+            muted: true,
+            width: this.width,
+            height: this.height
+        });
+      },
+      methods: {
+        getVideoCaptureRecordList: function(day, callback) {
+            var that = this,
+                url = '/video-capture/record/list',
+                data = {
+                    day: day
+                };
+
+            $.ajax({
+                    url: url,
+                    data: data,
+                    type: 'post',
+                    success: function(r) {
+                        if (!r.success) {
+                            that.errorMessage = r.error;                                            
+                        } else {
+                            callback && callback(r.data);               
+                        }                                                                    
+                    }
+                });
+        },
+        getVideoCaptureDayList: function(callback) {
+            var that = this,
+                url = '/video-capture/day/list',
+                data = {
+                };
+
+            $.ajax({
+                    url: url,
+                    data: data,
+                    type: 'post',
+                    success: function(r) {
+                        if (!r.success) {
+                            that.errorMessage = r.error;                                            
+                        } else {
+                            callback && callback(r.data);               
+                        }                                                                    
+                    }
+                });
+        },
+        onSelectVideoCaptureDay: function(v) {
+            this.activeVideoCaptureDay = v.key;
+        },
+        onSelectVideoSize: function(v) {
+            switch (v.key) {
+                case '320x240':
+                    this.width = 320;
+                    this.height = 240;
+                    break; 
+                    
+                case '640x480':
+                    this.width = 640;
+                    this.height = 480;
+                    break;
+                    
+                case '800x600':
+                    this.width = 800;
+                    this.height = 600;
+                    break;
+                    
+                case '1024x768':
+                    this.width = 1024;
+                    this.height = 768;
+                    break;
+            }
+            this.videoElement = mergeProps(this.videoElement, {
+                controls: true,
+                muted: true,
+                width: this.width,
+                height: this.height
+            });            
+        },
+        onSelectVideoInterval: function(v) {
+            this.saveInterval = v.key;
+        },
+        onMediaSuccess: function(stream) {
+          var that = this;
+          
+          this.videoElement.srcObject = stream;
+          
+          this.videoElement.addEventListener('loadedmetadata', function() {
+            if (that.mediaRecorder) {
+              return;
+            }
+            that.mediaRecorder = new MediaStreamRecorder(stream);
+            that.mediaRecorder.ondataavailable = function(blob) {
+                that.upload(blob);
+            };       
+            that.mediaRecorder.start(that.saveInterval);
+          });
+
+          this.videoElement.play();
+          document.getElementById('container').appendChild(this.videoElement);
+        },
+        onMediaError: function(e) {
+          console.error('media error', e);
+        },
+        captureUserMedia: function(successCallback, errorCallback) {
+          navigator.mediaDevices.getUserMedia(this.saveMediaSettings)
+            .then(successCallback)
+            .catch(errorCallback);
+        },
+        onSelectVideoCamera: function(v) {
+            this.videoRecordDeviceId = v.key;
+        },
+        onClickStartStopBtn: function() {
+            if (this.isVideSaveNow) {
+                if (this.mediaRecorder) {
+                    this.mediaRecorder.stop();
+                }
+                this.videoElement.pause();
+                document.getElementById('container').innerHTML = '';
+                this.isVideSaveNow = false;
+            } else {
+                this.captureUserMedia(this.onMediaSuccess, this.onMediaError);
+                this.isVideSaveNow = true;
+            }
+        },
+        blobToBase64: function(blob, callback) {
+            var reader = new FileReader();
+            reader.onload = function() {
+              var dataUrl = reader.result;
+              var base64 = dataUrl.split(',')[1];
+              callback(base64);
+            };
+            reader.readAsDataURL(blob);
+        },
+        upload: function(blob) {
+            var that = this;
+       
+            this.blobToBase64(blob, function(base64){
+                var update = {
+                    saveInterval: that.saveInterval,
+                    'blob': base64
+                };         
+                that.$http.post('/upload', update).then(resp => {
+                    console.log(resp);
+                }); 
+            });            
+        }
+      }
+    });
+  </script>
+</body>
+</html>

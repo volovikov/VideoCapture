@@ -1,0 +1,67 @@
+.Table {
+    
+}
+.Table table {
+    width: 100%;
+    border-collapse: collapse;
+    border-left: 1px solid #e0e0e0;     
+    /*border: 1px solid #e5141e;*/
+}
+.Table table tr {
+    border-bottom: solid 1px #e0e0e0;
+}
+.Table table tr:first-child {
+    box-shadow: 1px 1px 5px #e1e1e1;
+    box-shadow: none !important;
+}
+.Table table tr:nth-child(odd) {
+    background-color: #f0f0f0;
+    box-shadow: inset 1px 1px 1px white; /** В Chroome не работает! */
+}
+.Table table th {
+    background-image: linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background-image: -o-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background-image: -moz-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background-image: -webkit-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background-image: -ms-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.04, rgb(222,15,22)), color-stop(0.52, rgb(177,12,17)));    
+    height: 30px;
+    color: white;
+    font: bold 11px Arial;
+    border-right: 1px solid #a00a0f;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+.Table table th.Selected {
+    box-shadow: inset 1px 2px 9px #910a0f;    
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, -o-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, -moz-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, -webkit-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, -ms-linear-gradient(top, rgb(222,15,22) 4%, rgb(177,12,17) 52%);
+    background: url(../img/table/arrow-transparent.png) center right no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0.04, rgb(222,15,22)), color-stop(0.52, rgb(177,12,17)));        
+}
+.Table table tr td {
+    height: 30px;
+    border-right: solid 1px #e0e0e0; 
+    padding: 2px 6px;
+	font: 14px 'PTSansRegular', Arial;
+}
+.Table table tr:hover {
+    /*background-color: #ffe9e9;*/
+}
+.Table table tr.Selected {
+    background-color: #ffe9e9;
+}
+.Table .Label {
+    padding-left: 10px;
+    font: 14px 'PTSansRegular', Arial;
+    color: #757575;
+    padding: 20px 0 9px 9px;
+}

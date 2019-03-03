@@ -1,0 +1,26 @@
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    font-family: 'Consolas';
+}
+.row {
+
+}
+.col {
+    display: inline-block;
+}
+.col.game-col {
+    width: 10px;
+    height: 10px;
+    border: solid 1px #cccccc;
+}
+.select {
+    background-color: black;
+}
+.select.green {
+    background-color: green;
+}
+#game-field {
+    margin: 10px;
+}

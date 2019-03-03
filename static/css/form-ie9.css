@@ -1,0 +1,100 @@
+.Form .Field .Select {
+    border: 1px solid #f6f6f6;
+    border-bottom: 1px solid #cacaca;
+    border-right: 1px solid #cacaca;
+    font: bold 11px Arial;    
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 3px #cacaca;    
+    background: url(../img/form/arrow.png) top right no-repeat, url(../img/form/bg-select.png) center left repeat-x;
+    color: #757575;
+    text-shadow: white 1px 1px 1px;    
+    vertical-align: top;
+    position:relative;
+    cursor: pointer;    
+    height: 14px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;    
+}
+.Form .Button.Calc {
+    height: 36px;
+    line-height: 36px;
+    background: url(../img/form/bg-button.png) left center repeat-x;
+    color: white;
+    text-shadow: #a01f0f 1px 1px 1px;       
+    border: 1px solid #c14240;
+    padding: 0 14px;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 1px #f3898a, 1px 1px 3px #cacaca;
+}
+.Form .Button.Calc:active {
+    box-shadow: inset 1px 2px 9px #7f0b11;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;    
+}
+.Form .Button.Selected {
+    height: 36px;
+    line-height: 36px;
+    background: url(../img/form/bg-button.png) left center repeat-x;
+    color: white;
+    text-shadow: #a01f0f 1px 1px 1px;       
+    border: 1px solid #c14240;
+    padding: 0 14px;
+    border-radius: 4px;
+    box-shadow: inset 1px 1px 1px #f3898a, 1px 1px 3px #cacaca;
+}
+.Form .Button.Selected:active {
+    box-shadow: inset 1px 2px 9px #7f0b11;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;      
+}
+.Form .Button.Wait {
+    border: 1px solid #cccccc;    
+    background: url(../img/preloader-small.gif) 8px center no-repeat, url(../img/form/bg-button-disabled.png) left center repeat-x;
+}
+.Form .Button.Wait:active {
+    box-shadow: inset 1px 1px 3px #fbfbfb;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;      
+}
+.Form .DatePicker .Header {
+    background: url(../img/form/bg-datepicker.png) left center repeat-x;
+    height: 20px;
+    line-height: 20px;
+}
+.Form .DatePicker .DateWeek span {
+	display: inline-block;
+	padding: 4px 2px; 
+	padding-right: 3px;
+	font: normal 10px 'PTSansRegular', Arial;
+	text-align: center;
+	width: 19px;
+	color: #595959;
+    border-top: solid 1px #adadad;
+    color: white;
+    background: url(../img/form/bg-datepicker-week.png) left center repeat-x;
+}
+.Form .DatePicker .DateWeek span.DayOff {
+    background: url(../img/form/bg-datepicker-week-dayoff.png) left center repeat-x;
+    border-top: solid 1px #d6d6d6;
+}

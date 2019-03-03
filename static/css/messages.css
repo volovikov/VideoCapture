@@ -1,0 +1,114 @@
+.Message {
+    padding: 12px 0;
+    border-radius: 4px;
+    margin: 5px 0;
+    text-align: left;
+}
+.Message.Good {
+    background-image: linear-gradient(bottom, rgb(191,227,136) 1%, rgb(207,235,161) 74%);
+    background-image: -o-linear-gradient(bottom, rgb(191,227,136) 1%, rgb(207,235,161) 74%);
+    background-image: -moz-linear-gradient(bottom, rgb(191,227,136) 1%, rgb(207,235,161) 74%);
+    background-image: -webkit-linear-gradient(bottom, rgb(191,227,136) 1%, rgb(207,235,161) 74%);
+    background-image: -ms-linear-gradient(bottom, rgb(191,227,136) 1%, rgb(207,235,161) 74%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.01, rgb(191,227,136)),
+        color-stop(0.74, rgb(207,235,161))
+    );        
+    box-shadow: inset 0 0 0 1px #e3f3c8, 0 0 0 1px #a6cd68;
+}
+.Message.Info {
+    background-image: linear-gradient(bottom, rgb(195,228,255) 1%, rgb(222,240,255) 74%);
+    background-image: -o-linear-gradient(bottom, rgb(195,228,255) 1%, rgb(222,240,255) 74%);
+    background-image: -moz-linear-gradient(bottom, rgb(195,228,255) 1%, rgb(222,240,255) 74%);
+    background-image: -webkit-linear-gradient(bottom, rgb(195,228,255) 1%, rgb(222,240,255) 74%);
+    background-image: -ms-linear-gradient(bottom, rgb(195,228,255) 1%, rgb(222,240,255) 74%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.01, rgb(195,228,255)),
+        color-stop(0.74, rgb(222,240,255))
+    );    
+    box-shadow: inset 0 0 0 1px #eef8ff, 0 0 0 1px #b8cadb;    
+}
+.Message.Attention {
+    background-image: linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
+    background-image: -o-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
+    background-image: -moz-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
+    background-image: -webkit-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
+    background-image: -ms-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.01, rgb(255,238,191)),
+        color-stop(0.74, rgb(255,246,219))
+    );
+    box-shadow: inset 0 0 0 1px #fffdf6, 0 0 0 1px #e5d6a2;
+}
+.Message.Error {
+    background-image: linear-gradient(bottom, rgb(255,121,121) 1%, rgb(255,172,171) 74%);
+    background-image: -o-linear-gradient(bottom, rgb(255,121,121) 1%, rgb(255,172,171) 74%);
+    background-image: -moz-linear-gradient(bottom, rgb(255,121,121) 1%, rgb(255,172,171) 74%);
+    background-image: -webkit-linear-gradient(bottom, rgb(255,121,121) 1%, rgb(255,172,171) 74%);
+    background-image: -ms-linear-gradient(bottom, rgb(255,121,121) 1%, rgb(255,172,171) 74%);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.01, rgb(255,121,121)),
+        color-stop(0.74, rgb(255,172,171))
+    );    
+    box-shadow: inset 0 0 0 1px #ffcccc, 0 0 0 1px #f26664;
+}
+.Message .Text {
+    display: inline-block;
+    width: 75%;
+    vertical-align: top;
+    margin-left: 12px;
+    padding-left: 25px; 
+    min-height: 16px;
+    #zoom: 1;
+    #display: inline;        
+}
+.Message.Good .Text {
+    color: #4d6f14;
+    background: url(../img/form/icon-message-good.png) top left no-repeat;
+}
+.Message.Info .Text {
+    color: #346997;
+    background: url(../img/form/icon-message-info.png) top left no-repeat;
+}
+.Message.Attention .Text {
+    color: #a47625;
+    background: url(../img/form/icon-message-attention.png) top left no-repeat;
+}
+.Message.Error .Text {
+    color: #82333b;
+    background: url(../img/form/icon-message-error.png) top left no-repeat;    
+}
+.Message .Button.Close {
+    width: 3%;    
+    height: 15px;
+    vertical-align: top;    
+    float: right;
+    min-width: 15px;
+    padding: 0 3px;
+    border: none;
+    box-shadow: none;
+}
+.Message.Good .Button.Close {
+    background: url(../img/form/icon-message-close-good.png) center center no-repeat;
+}
+.Message.Info .Button.Close {
+    background: url(../img/form/icon-message-close-info.png) center center no-repeat;
+}
+.Message.Attention .Button.Close {
+    background: url(../img/form/icon-message-close-attention.png) center center no-repeat;
+}
+.Message.Error .Button.Close {
+    background: url(../img/form/icon-message-close-error.png) center center no-repeat;
+}

@@ -1,0 +1,49 @@
+.TabPanel {
+	margin-top: 40px;
+}
+.TabPanel .Header {
+	
+}
+.TabPanel > .Header > .Section {
+    display: inline-block;
+    padding: 5px 20px;
+    font: normal 12px Arial;
+    color: #e5141e;;
+    text-decoration: none;	
+    cursor: pointer;
+    height: 26px;
+    line-height: 26px;
+    border-radius: 3px 3px 0 0;
+    position: relative;    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;     
+    #zoom: 1;
+    #display: inline;     
+}
+.TabPanel > .Header > .Section.Active {	
+    color: white;
+    font-weight: bold;
+    background-image: linear-gradient(bottom, rgb(178,12,17) 13%, rgb(223,15,22) 57%);
+    background-image: -o-linear-gradient(bottom, rgb(178,12,17) 13%, rgb(223,15,22) 57%);
+    background-image: -moz-linear-gradient(bottom, rgb(178,12,17) 13%, rgb(223,15,22) 57%);
+    background-image: -webkit-linear-gradient(bottom, rgb(178,12,17) 13%, rgb(223,15,22) 57%);
+    background-image: -ms-linear-gradient(bottom, rgb(178,12,17) 13%, rgb(223,15,22) 57%);
+    background-image: -webkit-gradient(linear, left bottom, left top,	color-stop(0.13, rgb(178,12,17)), color-stop(0.57, rgb(223,15,22)));    
+    box-shadow: 1px 0px 5px #e1e1e1;;
+    border: 1px solid #c14240;
+    text-shadow: #a01f0f 1px 1px 1px; 
+}
+.TabPanel > .Body {	
+    width: auto;
+}
+.TabPanel > .Body > .Section {
+	display: none;
+}
+.TabPanel > .Body > .Section.Active {
+	display: block;
+}
