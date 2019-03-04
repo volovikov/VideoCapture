@@ -582,6 +582,7 @@ Vue.component('main-tab', {
             } else {
                 this.activeSectionIndex = index;
             }
+            this.$emit('click', index);
         }
     },
     template: '<div class="TabPanel">'+
@@ -613,7 +614,7 @@ Vue.component('main-tab-item', {
         },
         disable: function() {
             this.isActive = false;
-        }
+        },
     },
     template: '<div class="Section" :class="[isActive ? \'Active\' : \'\']"><slot></slot></div>'
 });

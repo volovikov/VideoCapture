@@ -27,7 +27,7 @@
 </head>
 <body>
   <div id="main-panel" style="margin: 1em auto">
-    <main-tab bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
+    <main-tab @click="onClickTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Регистрация">
             <h1>Контроль</h1>
             <main-form class="Flat">
@@ -125,7 +125,7 @@
             }
           },
           saveInterval: 5000
-        }
+        };
       },
       watch: {
           activeVideoCaptureDay: function(v) {
@@ -222,6 +222,14 @@
         });
       },
       methods: {
+        onClickTab: function(tabIndex) {
+            var that = this;
+console.log(tabIndex);            
+            this.getVideoCaptureDayList(function(data) {
+                that.videoCaptureDayList = data;
+                that.activeVideoCaptureDay = data[0].key;
+            });
+        },
         getVideoCaptureRecordList: function(day, callback) {
             var that = this,
                 url = '/video-capture/record/list',
