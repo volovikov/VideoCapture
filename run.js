@@ -25,7 +25,8 @@ connection.connect();
 
 var getVideoCaptureRecordList = function(day, callback) {
     query = "\n SELECT * FROM `videocapture`"
-           +"\n WHERE DATE_FORMAT(`datetime`, '%Y-%m-%e') = '" + day + "'";
+           +"\n WHERE DATE_FORMAT(`datetime`, '%Y-%m-%e') = '" + day + "'"
+           +"\n ORDER BY `datetime` DESC";
 
     connection.query(query, function(err, results) {
         callback && callback(err, results);
@@ -34,7 +35,8 @@ var getVideoCaptureRecordList = function(day, callback) {
 var getVideoCaptureDayList = function(dayDeep, callback) {        
     query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
             +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `videocapture`"
-            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY) AS `s` ";
+            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` DESC) AS `s` ";
+
 
     connection.query(query, function(err, results) {
         callback && callback(err, results);
