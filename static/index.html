@@ -30,7 +30,7 @@
     <main-tab @click="onClickTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Регистрация">
             <h1>Контроль</h1>
-            <main-form class="Flat">
+            <main-form class="Flat" v-show="!isVideSaveNow">
                 <main-form-field ref='video-device-selector'>
                     <main-form-label>Выберите камеру</main-form-label>
                     <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
