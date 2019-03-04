@@ -30,7 +30,8 @@
     <main-tab @click="onClickTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Регистрация">
             <h1>Контроль</h1>
-            <main-form class="Flat" v-show="!isVideSaveNow">
+            <main-form class="Flat">
+              <div v-show="!isVideSaveNow">
                 <main-form-field ref='video-device-selector'>
                     <main-form-label>Выберите камеру</main-form-label>
                     <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
@@ -43,6 +44,7 @@
                     <main-form-label>Интервал записи (сек)</main-form-label>
                     <main-form-select @select="onSelectVideoInterval" :list='videoSaveIntervalList'></main-form-select>
                 </main-form-field>
+               </div>
                 <main-form-field>
                     <main-form-label>Просмотр</main-form-label>
                     <div id="container"></div>
@@ -368,13 +370,7 @@
                     'blob': base64
                 };         
                 that.$http.post('/upload', update).then(resp => {
-                    if (resp.success) {
-                        that.getVideoCaptureRecordList(v, function(data) {
-                            that.videoCaptureRecordTblData = data.map(function(r) {
-                                return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
-                            });
-                        });
-                    }
+
                 }); 
             });            
         }
