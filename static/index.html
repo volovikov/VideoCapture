@@ -128,15 +128,6 @@
         };
       },
       watch: {
-          activeVideoCaptureDay: function(v) {
-            var that = this;
-            
-            this.getVideoCaptureRecordList(v, function(data) {
-                that.videoCaptureRecordTblData = data.map(function(r) {
-                    return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
-                });
-            });
-          },
           width: function(v) {
               this.saveMediaSettings.video.width.exact = v;
           },
@@ -184,6 +175,7 @@
         this.getVideoCaptureDayList(function(data) {
             that.videoCaptureDayList = data;
             that.activeVideoCaptureDay = data[0].key;
+            that.reloadVideoCaptureTable();
         });
         navigator.mediaDevices.enumerateDevices()
             .then(function(devices) {
@@ -222,12 +214,22 @@
         });
       },
       methods: {
+        reloadVideoCaptureTable: function() {
+            var that = this;
+            
+            this.getVideoCaptureRecordList(this.activeVideoCaptureDay, function(data) {
+                that.videoCaptureRecordTblData = data.map(function(r) {
+                    return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
+                });
+            });
+        },
         onClickTab: function(tabIndex) {
             var that = this;
-console.log(tabIndex);            
+      
             this.getVideoCaptureDayList(function(data) {
                 that.videoCaptureDayList = data;
                 that.activeVideoCaptureDay = data[0].key;
+                that.reloadVideoCaptureTable();
             });
         },
         getVideoCaptureRecordList: function(day, callback) {
@@ -271,6 +273,7 @@ console.log(tabIndex);
         },
         onSelectVideoCaptureDay: function(v) {
             this.activeVideoCaptureDay = v.key;
+            this.reloadVideoCaptureTable();
         },
         onSelectVideoSize: function(v) {
             switch (v.key) {
@@ -365,7 +368,13 @@ console.log(tabIndex);
                     'blob': base64
                 };         
                 that.$http.post('/upload', update).then(resp => {
-                    console.log(resp);
+                    if (resp.success) {
+                        that.getVideoCaptureRecordList(v, function(data) {
+                            that.videoCaptureRecordTblData = data.map(function(r) {
+                                return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
+                            });
+                        });
+                    }
                 }); 
             });            
         }
