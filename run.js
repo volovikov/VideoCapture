@@ -6,23 +6,102 @@ var bodyParser = require('body-parser');
 var fs = require("fs");
 var request = require('request');
 var port = 9000;
+var dayDeep = 7;
 var staticDir = '/static';
 var videoDir = '/video';
 var videExt = '.webm';
 var mysql = require('mysql');
 
 app.use(express.static('static'));
-app.use(bodyParser.json({limit: '10mb', extended: true}));
-app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
+app.use(bodyParser.json({limit: '100mb'}));
+app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 
-var connection = mysql.createConnection({
+var databaseConfig = {
     host: 'localhost',
     user: 'root',
     password : '',
     database : 'videocapture'
-});
-connection.connect();
+};
+var handleDisconnect = function() {
+  connection = mysql.createConnection(databaseConfig);
 
+  connection.connect(function(err) {
+    if (err) {
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 2000);
+    }
+  });
+
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+}
+
+handleDisconnect();
+
+var eraseGarbage = function() {
+    var validDateArr = [],
+        d;
+
+    var getValidMonth = function() {
+        var v = (d.getMonth()) + 1;
+
+        if (v<10) {
+            return '0' + v;
+        } else {
+            return v;
+        }
+    };
+    var getValidDay = function() {
+        var v = d.getDate();
+        
+        if (v<10) {
+            return '0' + v;
+        } else {
+            return v;
+        }
+    };
+    var getValidYear = function() {
+        return d.getFullYear();
+    };
+    for (var i=dayDeep; i--; i==0) {
+        d = new Date();
+        d.setDate(d.getDate()-i);
+        validDateArr.push([getValidYear(), getValidMonth(), getValidDay()].join('-'));
+    }    
+    var getDirectories = function(path) {
+        return fs.readdirSync(path).filter(function (file) {
+          return fs.statSync(path+'/'+file).isDirectory();
+        });
+    };
+    var deleteFolderRecursive = function(path) {
+        if (fs.existsSync(path)) {
+          fs.readdirSync(path).forEach(function(file, index){
+            var curPath = path + "/" + file;
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+              deleteFolderRecursive(curPath);
+            } else { // delete file
+              fs.unlinkSync(curPath);
+            }
+          });
+          fs.rmdirSync(path);
+        }
+    };
+    var pathOffset = '.' + staticDir + videoDir + '/'; 
+    
+    getDirectories(pathOffset).forEach(function(d) {
+        if (validDateArr.indexOf(d) == -1) {
+            console.log('Found old video files ' + pathOffset + d);
+            deleteFolderRecursive(pathOffset + d);
+        }
+    });
+};
 var getVideoCaptureRecordList = function(day, callback) {
     query = "\n SELECT * FROM `videocapture`"
            +"\n WHERE DATE_FORMAT(`datetime`, '%Y-%m-%e') = '" + day + "'"
@@ -35,8 +114,7 @@ var getVideoCaptureRecordList = function(day, callback) {
 var getVideoCaptureDayList = function(dayDeep, callback) {        
     query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
             +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `videocapture`"
-            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` DESC) AS `s` ";
-
+            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
 
     connection.query(query, function(err, results) {
         callback && callback(err, results);
@@ -72,12 +150,12 @@ app.post('/video-capture/record/list', function(req, res) {
     });   
 });
 app.post('/video-capture/day/list', function(req, res) {
-    var dayDeep = req.body.dayDeep;
-  
-    if (typeof dayDeep == 'undefined') {
-        dayDeep = 5;
-    }
-    getVideoCaptureDayList(dayDeep, function(err, data) {
+    var dd = req.body.dayDeep;
+    
+    if (typeof ddayDeep == 'undefined') {
+        dd = dayDeep;
+    }  
+    getVideoCaptureDayList(dd, function(err, data) {
         if (!err) {
             res.json({
                 success: true,
@@ -117,6 +195,8 @@ app.post('/upload', function(req, res) {
         }); 
     });
 });
-http.listen(port, function(){
-  console.log(`Server is started at port ${port}\nTo close use Ctrl+C`);
+http.listen(port, function() {
+    console.log('Run erase garbage procedure');
+    eraseGarbage();
+    console.log(`Server is started at port ${port}\nTo close use Ctrl+C`);
 });

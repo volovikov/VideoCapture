@@ -92,7 +92,13 @@
             selected: true
           },{
             key: 60000,
-            value: '1 мин'  
+            value: '1 мин'            
+          },{
+            key: 120000,
+            value: '2 мин'
+          },{
+            key: 300000,
+            value: '5 мин'              
           }],
           videoSizeList: [{
             key: '320x240',
@@ -174,11 +180,7 @@
       mounted: function() {
         var that = this;
         
-        this.getVideoCaptureDayList(function(data) {
-            that.videoCaptureDayList = data;
-            that.activeVideoCaptureDay = data[0].key;
-            that.reloadVideoCaptureTable();
-        });
+        this.setVideoCaptureDayList();
         navigator.mediaDevices.enumerateDevices()
             .then(function(devices) {
                 devices.forEach(function(device, index) {
@@ -216,23 +218,29 @@
         });
       },
       methods: {
+        setVideoCaptureDayList: function() {
+            var that = this;
+      
+            this.getVideoCaptureDayList(function(data) {
+                if (!data.length) {
+                    return;
+                }
+                that.videoCaptureDayList = data;
+                that.activeVideoCaptureDay = data[0].key;
+                that.reloadVideoCaptureTable();
+            });            
+        },
         reloadVideoCaptureTable: function() {
             var that = this;
             
             this.getVideoCaptureRecordList(this.activeVideoCaptureDay, function(data) {
                 that.videoCaptureRecordTblData = data.map(function(r) {
-                    return [r.datetime, r.saveInterval, '<a href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
+                    return [r.datetime, r.saveInterval, '<a target="_blank" href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
                 });
             });
         },
-        onClickTab: function(tabIndex) {
-            var that = this;
-      
-            this.getVideoCaptureDayList(function(data) {
-                that.videoCaptureDayList = data;
-                that.activeVideoCaptureDay = data[0].key;
-                that.reloadVideoCaptureTable();
-            });
+        onClickTab: function() {
+            this.setVideoCaptureDayList();
         },
         getVideoCaptureRecordList: function(day, callback) {
             var that = this,
