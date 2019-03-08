@@ -5,12 +5,40 @@ var io = require("socket.io")(http);
 var bodyParser = require('body-parser');
 var fs = require("fs");
 var request = require('request');
-var port = 9000;
+var serverPort = 9000;
 var dayDeep = 7;
 var staticDir = '/static';
 var videoDir = '/video';
 var videExt = '.webm';
 var mysql = require('mysql');
+var SerialPort = require('serialport');
+
+SerialPort.list().then(function(list) {
+    console.log(list);
+});
+var sensorPort = new SerialPort('COM4', {
+  baudRate: 115200
+});
+sensorPort.on('error', function(err) {
+    console.log(err);
+});
+sensorPort.on('data', function(buffer) {
+    var str = buffer.toString(),
+        jsonStr = str
+          .replace('\b', '')
+          .replace('\r', '')
+          .replace('\n', '')
+          .replace('>', '');
+    try {
+        io.emit('metering', JSON.parse(jsonStr));
+    } catch(e) {
+        
+    }   
+});
+
+io.on('connection', function(socket) {
+    //
+});
 
 app.use(express.static('static'));
 app.use(bodyParser.json({limit: '100mb'}));
@@ -129,6 +157,11 @@ var saveVideoCaptureRec = function(data, callback) {
     });
 };
 
+app.all('*', function(req, res, next) {
+   console.log('Run erase garbage procedure');
+   eraseGarbage();
+   next();
+});
 app.get('/video-capture/record/get', function(req, res) {
     
 });
@@ -195,8 +228,7 @@ app.post('/upload', function(req, res) {
         }); 
     });
 });
-http.listen(port, function() {
-    console.log('Run erase garbage procedure');
-    eraseGarbage();
-    console.log(`Server is started at port ${port}\nTo close use Ctrl+C`);
+
+http.listen(serverPort, function() {    
+    console.log(`Server is started at port ${serverPort}\nTo close use Ctrl+C`);
 });

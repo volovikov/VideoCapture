@@ -31,7 +31,7 @@
         <main-tab-item title="Регистрация">
             <h1>Контроль</h1>
             <main-form class="Flat">
-              <div v-show="!isVideSaveNow">
+              <div v-show="!isVideoSaveNow">
                 <main-form-field ref='video-device-selector'>
                     <main-form-label>Выберите камеру</main-form-label>
                     <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
@@ -50,7 +50,7 @@
                     <div id="container"></div>
                 </main-form-field>
                 <main-button-group>
-                    <main-button selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
+                    <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
                 </main-button-group>                
             </main-form>
         </main-tab-item>   
@@ -77,7 +77,7 @@
           width: null,
           height: null,
           videoElement: null,
-          isVideSaveNow: false,
+          isVideoSaveNow: false,
           mediaRecorder: null,
           videoCameraList: [],
           videoSaveIntervalList: [{
@@ -132,7 +132,12 @@
                 height: {exact: null}
             }
           },
-          saveInterval: 5000
+          saveInterval: 5000,
+          metering: null,
+          threshold: {
+              forCameraStart: 500,
+              forCameraStop: 50
+          } 
         };
       },
       watch: {
@@ -142,7 +147,7 @@
           height: function(v) {
               this.saveMediaSettings.video.height.exact = v;
           },
-          isVideSaveNow: function(v) {
+          isVideoSaveNow: function(v) {
               var fields = [
                   this.$refs['video-size-selector'],
                   this.$refs['video-save-interval-selector'],
@@ -160,6 +165,18 @@
           },
           videoRecordDeviceId: function(v) {
               this.saveMediaSettings.video.deviceId.exact = v;
+          },
+          'metering.lighting': function(v) {
+              var btn = this.$refs['start-stop-rec-btn'];
+              
+              if (v >= this.threshold.forCameraStart) {
+console.log(v, this.isVideoSaveNow)                  
+                  if (!this.isVideoSaveNow) {
+                      //btn.click();
+                  }
+              } else if (v < this.threshold.forCameraStop) {
+console.log(v, this.isVideoSaveNow)                  
+              }
           }
       },
       computed: {
@@ -170,7 +187,7 @@
             return this.width + 100;
         },
         toggleBtnText: function() {
-            if (this.isVideSaveNow) {
+            if (this.isVideoSaveNow) {
                 return 'Остановить';
             } else {
                 return 'Записывать';
@@ -180,6 +197,10 @@
       mounted: function() {
         var that = this;
         
+        this.socket = io();
+        this.socket.on('metering', function(v) {
+            that.metering = v;
+        });
         this.setVideoCaptureDayList();
         navigator.mediaDevices.enumerateDevices()
             .then(function(devices) {
@@ -348,6 +369,7 @@
             this.videoRecordDeviceId = v.key;
         },
         onClickStartStopBtn: function() {
+console.log(1);            
             if (this.isVideSaveNow) {
                 if (this.mediaRecorder) {
                     this.mediaRecorder.stop();
