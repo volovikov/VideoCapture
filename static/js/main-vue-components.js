@@ -258,6 +258,11 @@ Vue.component('main-form-input', {
             mainType: 'input'
         }
     },
+    watch: {
+        mainValue: function(v) {
+            console.log(v);
+        }
+    },
     methods: {
         reset: function() {
             this.mainValue = '';
@@ -300,9 +305,12 @@ Vue.component('main-form-input', {
         onClick: function() {
             this.setFocusOn();
             this.$parent.$emit('focus-on', this);
+        },
+        handleInput: function(v) {
+            this.$emit('input', v);
         }
     },
-    template: '<div v-on:click="onClick" class="Text" :class="{\'Error\':hasError, \'Focus\':hasActive, \'Readonly\':isReadonly()}"><input :readonly="isReadonly()" :type="type" :name="name" v-model="mainValue"></div>'
+    template: '<div v-on:click="onClick" class="Text" :class="{\'Error\':hasError, \'Focus\':hasActive, \'Readonly\':isReadonly()}"><input :readonly="isReadonly()" :type="type" :name="name" :value="value" @input="handleInput($event.target.value)"></div>'
 });
 Vue.component('main-form-select', {
     props: {

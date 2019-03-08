@@ -55,6 +55,7 @@
             </main-form>
         </main-tab-item>   
         <main-tab-item title="Просмотр">
+            <h1>Просмотр видео</h1>
             <main-form ref="video-control-form" class="Flat" style="margin-bottom: 2em">
                 <main-form-field>
                     <main-form-label>День</main-form-label>
@@ -62,7 +63,20 @@
                 </main-form-field>
             </main-form>
             <main-table :columns="videoCaptureRecordTblCols" :data="videoCaptureRecordTblData"></main-table>
-        </main-tab-item>
+        </main-tab-item>    
+        <main-tab-item title="Среда">               
+            <h1>Значение среды</h1>
+            <main-form class="Flat">
+                <main-form-field>
+                    <main-form-label>Температура, С</main-form-label>
+                    <main-form-input readonly="readonly" v-model="metering.temp"></main-form-input>
+                </main-form-field>            
+                <main-form-field>
+                    <main-form-label>Влажность, %С</main-form-label>
+                    <main-form-input readonly="readonly" v-model="metering.humidity"></main-form-input>
+                </main-form-field>                        
+            </main-form>
+        </main-tab-item>       
     </main-tab>
   </div>
   <script>
@@ -133,11 +147,15 @@
             }
           },
           saveInterval: 5000,
-          metering: null,
+          metering: {
+              temp: '',
+              humidity: '',
+          },
           threshold: {
               forCameraStart: 500,
               forCameraStop: 50
-          } 
+          },
+          mainDomain: 'http://karatespb.ru'
         };
       },
       watch: {
@@ -170,13 +188,24 @@
               var btn = this.$refs['start-stop-rec-btn'];
               
               if (v >= this.threshold.forCameraStart) {
-console.log(v, this.isVideoSaveNow)                  
                   if (!this.isVideoSaveNow) {
                       //btn.click();
                   }
               } else if (v < this.threshold.forCameraStop) {
-console.log(v, this.isVideoSaveNow)                  
+                  if (this.isVideoSaveNow) {
+                      //btn.click();
+                  }
               }
+          },
+          'metering.temp': function(v) {
+              this.$http.post(this.mainDomain + '/metering/temp/save', {value: v}, function(r) {
+                  console.log(r);
+              });
+          },
+          'metering.humidity': function(v) {
+                this.$http.post(this.mainDomain + '/metering/humidity/save', {value: v}, function(r) {
+                  console.log(r);
+              });
           }
       },
       computed: {
@@ -369,17 +398,16 @@ console.log(v, this.isVideoSaveNow)
             this.videoRecordDeviceId = v.key;
         },
         onClickStartStopBtn: function() {
-console.log(1);            
-            if (this.isVideSaveNow) {
+            if (this.isVideoSaveNow) {
                 if (this.mediaRecorder) {
                     this.mediaRecorder.stop();
                 }
                 this.videoElement.pause();
                 document.getElementById('container').innerHTML = '';
-                this.isVideSaveNow = false;
+                this.isVideoSaveNow = false;
             } else {
                 this.captureUserMedia(this.onMediaSuccess, this.onMediaError);
-                this.isVideSaveNow = true;
+                this.isVideoSaveNow = true;
             }
         },
         blobToBase64: function(blob, callback) {
