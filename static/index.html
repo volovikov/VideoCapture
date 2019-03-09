@@ -75,6 +75,10 @@
                     <main-form-label>Влажность, %С</main-form-label>
                     <main-form-input readonly="readonly" v-model="metering.humidity"></main-form-input>
                 </main-form-field>                        
+                <main-form-field>
+                    <main-form-label>Освещенность, Люкс</main-form-label>
+                    <main-form-input readonly="readonly" v-model="metering.lighting"></main-form-input>
+                </main-form-field>                
             </main-form>
         </main-tab-item>       
     </main-tab>
@@ -148,6 +152,7 @@
           },
           saveInterval: 5000,
           metering: {
+              lighting: '',
               temp: '',
               humidity: '',
           },
@@ -185,27 +190,25 @@
               this.saveMediaSettings.video.deviceId.exact = v;
           },
           'metering.lighting': function(v) {
-              var btn = this.$refs['start-stop-rec-btn'];
+              var btn = this.$refs['start-stop-rec-btn'];                  
               
               if (v >= this.threshold.forCameraStart) {
                   if (!this.isVideoSaveNow) {
-                      //btn.click();
+                      btn.click();
+                      this.saveMeteringValue();
                   }
               } else if (v < this.threshold.forCameraStop) {
                   if (this.isVideoSaveNow) {
-                      //btn.click();
+                      btn.click();
+                      this.saveMeteringValue();
                   }
-              }
+              }              
           },
           'metering.temp': function(v) {
-              this.$http.post(this.mainDomain + '/metering/temp/save', {value: v}, function(r) {
-                  console.log(r);
-              });
+              this.saveMeteringValue()
           },
           'metering.humidity': function(v) {
-                this.$http.post(this.mainDomain + '/metering/humidity/save', {value: v}, function(r) {
-                  console.log(r);
-              });
+              this.saveMeteringValue();              
           }
       },
       computed: {
@@ -268,6 +271,18 @@
         });
       },
       methods: {
+        saveMeteringValue: function() {
+            var that = this;
+            
+            $.ajax({
+              url: this.mainDomain + '/metering/save',
+              data: this.metering,
+              type: 'post',
+              success: function(r) {
+                  //
+              }
+            });            
+        },
         setVideoCaptureDayList: function() {
             var that = this;
       
