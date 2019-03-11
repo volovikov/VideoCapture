@@ -16,7 +16,7 @@ var SerialPort = require('serialport');
 SerialPort.list().then(function(list) {
     console.log(list);
 });
-var sensorPort = new SerialPort('COM4', {
+var sensorPort = new SerialPort('COM3', {
   baudRate: 115200
 });
 sensorPort.on('error', function(err) {
@@ -30,6 +30,7 @@ sensorPort.on('data', function(buffer) {
           .replace('\n', '')
           .replace('>', '');
     try {
+console.log(jsonStr);
         io.emit('metering', JSON.parse(jsonStr));
     } catch(e) {
         

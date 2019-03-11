@@ -157,8 +157,8 @@
               humidity: '',
           },
           threshold: {
-              forCameraStart: 500,
-              forCameraStop: 50
+              forCameraStart: 25,
+              forCameraStop: 10
           },
           mainDomain: 'http://karatespb.ru'
         };
@@ -388,10 +388,9 @@
           this.videoElement.srcObject = stream;
           
           this.videoElement.addEventListener('loadedmetadata', function() {
-            if (that.mediaRecorder) {
-              return;
-            }
-            that.mediaRecorder = new MediaStreamRecorder(stream);
+            if (!that.mediaRecorder) {
+              that.mediaRecorder = new MediaStreamRecorder(stream);
+            }            
             that.mediaRecorder.ondataavailable = function(blob) {
                 that.upload(blob);
             };       
