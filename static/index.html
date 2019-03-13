@@ -23,6 +23,9 @@
   <script src="js/vue-resource-1.5.1.js"></script>
   <script src="js/main-vue-components.js"></script>
   <style>
+      .TabPanel .Body h1 {
+          margin-bottom: 0px;
+      }
   </style>
 </head>
 <body>
@@ -107,10 +110,10 @@
           },{
             key: 30000,
             value: '30 сек',
-            selected: true
           },{
             key: 60000,
-            value: '1 мин'            
+            value: '1 мин',
+            selected: true
           },{
             key: 120000,
             value: '2 мин'
@@ -122,12 +125,12 @@
             key: '320x240',
             value: '320x240',
             width: 320,
-            height: 240,
+            height: 240
           },{
             key: '640x480',
             value: '640x480',            
             width: 640,
-            height: 480,   
+            height: 480,               
             selected: true
           },{
             key: '800x600',
@@ -144,7 +147,7 @@
           audioRecordDeviceId: null,          
           saveMediaSettings: {
             audio: true,
-            video: {
+            video: {               
                 deviceId: {exact: null},
                 width: {exact: null},
                 height: {exact: null}
@@ -228,12 +231,13 @@
       },
       mounted: function() {
         var that = this;
-        
+
         this.socket = io();
         this.socket.on('metering', function(v) {
             that.metering = v;
         });
         this.setVideoCaptureDayList();
+        
         navigator.mediaDevices.enumerateDevices()
             .then(function(devices) {
                 devices.forEach(function(device, index) {
@@ -264,8 +268,6 @@
         });
         this.videoElement = document.createElement('video');     
         this.videoElement = mergeProps(this.videoElement, {
-            controls: true,
-            muted: true,
             width: this.width,
             height: this.height
         });
@@ -351,32 +353,20 @@
             this.reloadVideoCaptureTable();
         },
         onSelectVideoSize: function(v) {
-            switch (v.key) {
-                case '320x240':
-                    this.width = 320;
-                    this.height = 240;
-                    break; 
+            var that = this; 
+            
+            this.videoSizeList.forEach(function(r) {
+                if (r.key == v.key) {
+                    that.width = r.width;
+                    that.height = r.height;
                     
-                case '640x480':
-                    this.width = 640;
-                    this.height = 480;
-                    break;
-                    
-                case '800x600':
-                    this.width = 800;
-                    this.height = 600;
-                    break;
-                    
-                case '1024x768':
-                    this.width = 1024;
-                    this.height = 768;
-                    break;
-            }
-            this.videoElement = mergeProps(this.videoElement, {
-                controls: true,
-                muted: true,
-                width: this.width,
-                height: this.height
+                    that.videoElement = mergeProps(that.videoElement, {
+                        controls: true,
+                        muted: true,
+                        width: r.width,
+                        height: r.height
+                    });            
+                }
             });            
         },
         onSelectVideoInterval: function(v) {
