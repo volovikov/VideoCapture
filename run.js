@@ -30,7 +30,6 @@ sensorPort.on('data', function(buffer) {
           .replace('\n', '')
           .replace('>', '');
     try {
-console.log(jsonStr);
         io.emit('metering', JSON.parse(jsonStr));
     } catch(e) {
         

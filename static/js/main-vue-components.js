@@ -259,9 +259,7 @@ Vue.component('main-form-input', {
         }
     },
     watch: {
-        mainValue: function(v) {
-            console.log(v);
-        }
+
     },
     methods: {
         reset: function() {
@@ -545,6 +543,44 @@ Vue.component('main-form-textarea', {
                 <textarea :name="name" v-model="mainValue"></textarea>
             </div>`
 });
+Vue.component('main-form-checkbox', {
+    props: {
+        name: {
+            type: String,
+            default: ''
+        },
+        value: {
+            type: Boolean,
+            default: false
+        }
+    },
+    computed: {
+        isChecked: function() {
+           return this.mainValue === true;
+       }
+    },
+    data: function() {
+        return {
+            mainValue: this.value,
+            mainName: this.name
+        }
+    },
+    methods: {
+        getKey: function() {
+            return this.mainName;
+        },
+        getValue: function() {
+            return this.mainValue;
+        },
+        onClick: function() {
+            this.mainValue = !this.mainValue;
+            this.$emit('input', this.mainValue);
+        }
+    },
+    template: `<div class="Checkbox" :class="{Selected:isChecked}" @click="onClick" :name="name" >
+                 <div class="Label"><slot></slot></div>
+               </div>`
+})
 Vue.component('main-tab', {
     props: {
         bordered: {
