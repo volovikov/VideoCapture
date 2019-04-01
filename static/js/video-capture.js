@@ -49,8 +49,8 @@ new Vue({
         isVideoSaveNow: false,
         isVideoCaptureSaveComplete: false,
         isVideoCaptureListLoaded: false,
-        isCaptureSave: true,
-        isCaptureAutoRun: true,
+        isCaptureSave: false,
+        isCaptureAutoRun: false,
         videoCaptureDayList: [],
         videoCaptureRecordTblData: [],
         videoCaptureRecordTblCols: ['Время', 'Интервал', 'Файл'],
@@ -80,7 +80,7 @@ new Vue({
             humidity: '',
         },
         threshold: {
-            forCameraStart: 25,
+            forCameraStart: 20,
             forCameraStop: 10
         },
         mainDomain: 'http://karatespb.ru'
