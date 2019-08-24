@@ -44,10 +44,10 @@
  */
 
 /**
- * General form event bus
+ * General form event mainEventBus
  * @event focus-on
  */
-var bus = new Vue();
+var mainEventBus = new Vue();
 
 /**
  * Example usage:
@@ -228,7 +228,7 @@ Vue.component('main-form-input', {
     mounted: function () {
         var that = this ;
 
-         bus.$on('focus-on', function(el) {
+         mainEventBus.$on('focus-on', function(el) {
             if (that._uid != el._uid) {
                 that.setFocusOff();
             }
@@ -275,7 +275,7 @@ Vue.component('main-form-input', {
         },
         onClick: function() {
             this.setFocusOn();
-            bus.$emit('focus-on', this);
+            mainEventBus.$emit('focus-on', this);
             this.$emit('focus-on', this);
         },
         handleInput: function(v) {
@@ -342,7 +342,7 @@ Vue.component('main-form-select', {
     mounted: function() {
         var that = this ;
 
-         bus.$on('focus-on', function(el) {
+         mainEventBus.$on('focus-on', function(el) {
             if (that._uid != el._uid) {
                 that.setFocusOff();
                 that.close();
@@ -426,8 +426,8 @@ Vue.component('main-form-select', {
         },
         onClick: function() {
             this.toggle();
-            bus.$emit('focus-on', this);
-            bus.$emit('expand-on', this);
+            mainEventBus.$emit('focus-on', this);
+            mainEventBus.$emit('expand-on', this);
             this.$parent.$emit('focus-on', this);
         },
         onSelect: function(key, value) {
@@ -518,7 +518,7 @@ Vue.component('main-form-textarea', {
         },
         onClick: function() {
             this.setFocusOn();
-            bus.$emit('focus-on', this);
+            mainEventBus.$emit('focus-on', this);
             this.$emit('focus-on', this);
         }
     },
@@ -557,7 +557,7 @@ Vue.component('main-form-checkbox', {
         },
         onClick: function() {
             this.mainValue = !this.mainValue;
-            bus.$emit('focus-on', this);
+            mainEventBus.$emit('focus-on', this);
             this.$emit('input', this.mainValue);
         }
     },
