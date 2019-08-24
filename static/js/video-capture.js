@@ -42,7 +42,7 @@ var videoSizeList = [{
     height: 768,            
   }];
 
-new Vue({
+var app = new Vue({
   el: '#main-panel',
   data: function() {    
     return {
@@ -74,6 +74,7 @@ new Vue({
           }
         },
         saveInterval: 5000,
+        movement: false,
         metering: {
             lighting: '',
             temp: '',
@@ -81,7 +82,7 @@ new Vue({
         },
         threshold: {
             forCameraStart: 20,
-            forCameraStop: 10
+            forCameraStop: 10,
         },
         mainDomain: 'http://karatespb.ru'
     };
@@ -143,6 +144,9 @@ new Vue({
     
     this.socket.on('metering', function(v) {
         that.metering = v;
+    });
+    this.socket.on('movement', function(v) {
+        that.movement = v;
     });
     navigator.mediaDevices.enumerateDevices()
         .then(function(devices) {

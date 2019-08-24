@@ -33,7 +33,7 @@
     <main-tab bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Видео">
             <h1>Захват видео</h1>
-            <main-form class="Flat">
+            <main-form ref='main-form' class="Flat">
                 <div v-if="isVideoSaveNow">
                     <div v-if="isVideoCaptureSaveComplete" class="Message Good">
                         <div class="Text">{{videoCaptureBlockInfo}}</div>
@@ -56,14 +56,32 @@
                         <main-form-label>Интервал записи (сек)</main-form-label>
                         <main-form-select @select="onSelectVideoInterval" :list='videoSaveIntervalList'></main-form-select>
                     </main-form-field>
-                    <main-form-field style="padding-top: 1em">
-                        <div class="Col">
-                            <main-form-checkbox v-model="isCaptureSave">Сохранять на диск?</main-form-checkbox>
-                        </div>
-                        <div class="Col">
-                            <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать если есть свет?</main-form-checkbox>
-                        </div>                        
-                    </main-form-field>
+                    <main-row>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-label>Порог освещения, вкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>                        
+                            </main-form-field>
+                        </main-col>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-label>Порог освещения, выкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>                        
+                            </main-form-field>
+                        </main-col>
+                    </main-row>    
+                    <main-row style='padding: 1em 0'>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-checkbox v-model="isCaptureSave">Сохранять на диск если есть движение?</main-form-checkbox>
+                            </main-form-field>
+                        </main-col>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать если есть свет?</main-form-checkbox>
+                            </main-form-field>    
+                        </main-col>
+                   </main-row>
                 </div>
                 <main-button-group>
                     <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    

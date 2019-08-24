@@ -43,20 +43,74 @@
  * });
  */
 
+/**
+ * General form event bus
+ * @event focus-on
+ */
+var bus = new Vue();
+
+/**
+ * Example usage:
+ * 
+ * <main-row>
+ *  <main-col>
+ *      ..
+ *  </main-col>
+ * </main-row>
+ */
+Vue.component('main-row', {
+    methods: {
+        getChildrenCount() {
+            return this.$children.length;
+        },
+        getFirstChildrenUid() {
+            return this.$children[0]._uid;
+        },
+        getLastChildrenUid() {
+            return this.$children[this.$children.length-1]._uid;
+        }
+    },
+    template: '<div class="Row" style="clear:both"><slot></slot></div>'
+});
+/**
+ * Этот компонент кладеться сразу после main-row
+ * main-col использует методы из main-row
+ * для того, чтобы высчитать размер колонок. 
+ * Если внутри main-row три main-col 
+ * То размер каждой будет высчетан как 50%
+ * 
+ * example:
+ * 
+ * <main-row>
+ *  <main-col>
+ *      ...
+ *  </main-col>
+ *  <main-col>
+ *      ...
+ *  </main-col>
+ *  <main-col>
+ *      ...
+ *  </main-col>
+ * </mcin-row>
+ */
+Vue.component('main-col', {
+    data: function() {
+        return {
+            width: 0,
+            isFirst: false,
+            isLast: false
+        }
+    },
+    mounted: function() {
+        this.width = 100 / this.$parent.getChildrenCount();
+        this.isFirst = this.$parent.getFirstChildrenUid() == this._uid ? true : false;
+        this.isLast = this.$parent.getLastChildrenUid() == this._uid ? true : false;
+    },
+    template: `<div class="Col" style="float:left;" :style="{width:width+'%'}" :class="{First:isFirst, Last:isLast}"><slot></slot></div>` 
+});
 Vue.component('main-form', {
     props: {
 
-    },
-    mounted: function() {
-        var that = this;
-
-        this.$on('focus-on', function(field) {
-            that.$children.forEach(function(f) {
-                if (f._uid != field._uid && typeof f.setFocusOff != 'undefined') {
-                    f.setFocusOff();
-                }
-            })
-        });
     },
     data: function() {
         return {
@@ -107,105 +161,18 @@ Vue.component('main-form', {
     },
     template: '<div class="Form"><slot></slot></div>'
 });
-Vue.component('main-form-field', {
+Vue.component('main-form-field', {    
     data: function() {
         return {
-            mainType: 'field',
-            fieldInputEl: undefined,
             isDisabled: false
         }
     },
-    mounted: function() {
-        var that = this;
-
-        this.$on('focus-on', function(elem) {
-            that.$parent.$emit('focus-on', that);
-        });
-        this.$children.forEach(function(c) {
-            if (typeof c.mainType != 'undefined' && c.mainType == 'input') {
-                that.fieldInputEl = c;
-            }
-        });
-    },
     methods: {
         setDisableOn: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.setDisableOn != 'undefined') {
-                this.fieldInputEl.setDisableOn();
-                this.isDisabled = true;
-            }            
+            this.isDisabled = true;
         },
         setDisableOff: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.setDisableOff != 'undefined') {
-                this.fieldInputEl.setDisableOff();
-                this.isDisabled = false;
-            }             
-        },
-        setErrorOn: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.setErrorOn != 'undefined') {
-                this.fieldInputEl.setErrorOn();
-            }
-        },
-        setErrorOff: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.setErrorOff != 'undefined') {
-                this.fieldInputEl.setErrorOff();
-            }
-        },
-        getKey: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.getKey != 'undefined') {
-                return this.fieldInputEl.getKey();
-            }
-        },
-        getValue: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.getValue != 'undefined') {
-                return this.fieldInputEl.getValue();
-            }
-        },
-        isValid: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.isValid != 'undefined') {
-                return this.fieldInputEl.isValid();
-            }
-        },
-        isMandatory: function() {
-            if (typeof this.fieldInputEl == 'undefined') {
-                return;
-            } else if (typeof this.fieldInputEl.isMandatory != 'undefined') {
-                return this.fieldInputEl.isMandatory();
-            }
-        },
-        setFocusOn: function() {
-            this.$children.forEach(function(f) {
-                if (typeof f.setFocusOn != 'undefined') {
-                    f.setFocusOn();
-                }
-            });
-        },
-        setFocusOff: function() {
-            this.$children.forEach(function(f) {
-                if (typeof f.setFocusOff != 'undefined') {
-                    f.setFocusOff();
-                }
-            });
-        },
-        reset: function() {
-            this.$children.forEach(function(f) {
-                if (typeof f.reset != 'undefined') {
-                    f.reset();
-                }
-            });
+            this.isDisabled = false;
         }
     },
     template: '<div class="Row"><div class="Field" :class="{Disabled:isDisabled}"><slot></slot></div></div>'
@@ -213,7 +180,7 @@ Vue.component('main-form-field', {
 Vue.component('main-form-label', {
     data: function() {
         return {
-            mainType: 'label'
+            
         }
     },
     template: '<div class="Label"><slot></slot></div>'
@@ -249,7 +216,7 @@ Vue.component('main-form-input', {
             default: ''
         }
     },
-    data: function() {
+    data: function() {        
         return {
             mainValue: this.value,
             mainKey: this.name,
@@ -257,10 +224,16 @@ Vue.component('main-form-input', {
             hasActive: this.active,
             mainType: 'input'
         }
-    },
-    watch: {
+    },    
+    mounted: function () {
+        var that = this ;
 
-    },
+         bus.$on('focus-on', function(el) {
+            if (that._uid != el._uid) {
+                that.setFocusOff();
+            }
+        });
+    },    
     methods: {
         reset: function() {
             this.mainValue = '';
@@ -302,7 +275,8 @@ Vue.component('main-form-input', {
         },
         onClick: function() {
             this.setFocusOn();
-            this.$parent.$emit('focus-on', this);
+            bus.$emit('focus-on', this);
+            this.$emit('focus-on', this);
         },
         handleInput: function(v) {
             this.$emit('input', v);
@@ -366,6 +340,14 @@ Vue.component('main-form-select', {
         },
     },
     mounted: function() {
+        var that = this ;
+
+         bus.$on('focus-on', function(el) {
+            if (that._uid != el._uid) {
+                that.setFocusOff();
+                that.close();
+            }
+        });
         this.selectedKey = this.mainKey;
         this.selectedValue = this.mainValue;
     },
@@ -444,13 +426,14 @@ Vue.component('main-form-select', {
         },
         onClick: function() {
             this.toggle();
+            bus.$emit('focus-on', this);
+            bus.$emit('expand-on', this);
             this.$parent.$emit('focus-on', this);
         },
         onSelect: function(key, value) {
             this.selectedKey = key;
             this.selectedValue = value;
             this.toggle();
-            this.$parent.$emit('select', this);
             this.$emit('select', {
                 key: key,
                 value: value
@@ -494,8 +477,7 @@ Vue.component('main-form-textarea', {
             mainValue: this.value,
             mainKey: this.name,
             hasError: this.error,
-            hasActive: this.active,
-            mainType: 'input' // mandatory!!
+            hasActive: this.active
         };
     },
     methods: {
@@ -536,7 +518,8 @@ Vue.component('main-form-textarea', {
         },
         onClick: function() {
             this.setFocusOn();
-            this.$parent.$emit('focus-on', this);
+            bus.$emit('focus-on', this);
+            this.$emit('focus-on', this);
         }
     },
     template: `<div v-on:click="onClick" class="TextArea" :class="{\'Error\':hasError, \'Focus\':hasActive}">
@@ -574,6 +557,7 @@ Vue.component('main-form-checkbox', {
         },
         onClick: function() {
             this.mainValue = !this.mainValue;
+            bus.$emit('focus-on', this);
             this.$emit('input', this.mainValue);
         }
     },

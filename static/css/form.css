@@ -23,7 +23,12 @@ root {
     display: inline-block;
     vertical-align: top;
     #zoom: 1;
-	#display: inline;
+    #display: inline;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+.Col.Last {
+    padding-right: 0px;
 }
 .Error input {
     border: 1px solid red;
