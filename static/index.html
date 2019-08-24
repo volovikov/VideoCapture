@@ -35,13 +35,24 @@
             <h1>Захват видео</h1>
             <main-form ref='main-form' class="Flat">
                 <div v-if="isVideoSaveNow">
+                    <main-row >
+                        <main-col>
+                            <main-form-field>
+                                <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать если есть свет?</main-form-checkbox>
+                            </main-form-field>    
+                        </main-col>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-checkbox v-model="isCaptureSave">Сохранять на диск если есть движение?</main-form-checkbox>
+                            </main-form-field>
+                        </main-col>
+                   </main-row>
+                    <main-form-field>
+                        <div id="container"></div>
+                    </main-form-field>                    
                     <div v-if="isVideoCaptureSaveComplete" class="Message Good">
                         <div class="Text">{{videoCaptureBlockInfo}}</div>
-                    </div>
-                    <main-form-field>
-                        <main-form-label>Просмотр</main-form-label>
-                        <div id="container"></div>
-                    </main-form-field>
+                    </div>                    
                 </div>
                 <div v-else>
                     <main-form-field ref='video-device-selector'>
@@ -73,14 +84,14 @@
                     <main-row style='padding: 1em 0'>
                         <main-col>
                             <main-form-field>
-                                <main-form-checkbox v-model="isCaptureSave">Сохранять на диск если есть движение?</main-form-checkbox>
-                            </main-form-field>
-                        </main-col>
-                        <main-col>
-                            <main-form-field>
                                 <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать если есть свет?</main-form-checkbox>
                             </main-form-field>    
                         </main-col>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-checkbox v-model="isCaptureSave">Сохранять на диск если есть движение?</main-form-checkbox>
+                            </main-form-field>
+                        </main-col>                        
                    </main-row>
                 </div>
                 <main-button-group>

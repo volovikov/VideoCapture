@@ -131,9 +131,9 @@ var app = new Vue({
     },
     toggleBtnText: function() {
         if (this.isVideoSaveNow) {
-            return 'Остановить';
+            return 'Выключить';
         } else {
-            return 'Записывать';
+            return 'Включить';
         }
     }
   },
@@ -293,7 +293,9 @@ var app = new Vue({
           that.mediaRecorder = new MediaStreamRecorder(stream);
         }            
         that.mediaRecorder.ondataavailable = function(blob) {
-            that.upload(blob);
+            if (that.isCaptureSave && that.movement) {
+                that.upload(blob);
+            }            
         };       
         that.mediaRecorder.start(that.saveInterval);
       });
@@ -339,7 +341,7 @@ var app = new Vue({
             return;
         }
         var that = this,
-            displayTime = 1500,
+            displayTime = 10000,
             d = new Date(),
             blockName = Math.round(d.getTime() / 1000).toString();
 
