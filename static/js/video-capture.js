@@ -44,7 +44,7 @@ var videoSizeList = [{
 
 new Vue({
   el: '#main-panel',
-  data: function() {
+  data: function() {    
     return {
         isVideoSaveNow: false,
         isVideoCaptureSaveComplete: false,
@@ -140,6 +140,7 @@ new Vue({
     var that = this;
 
     this.socket = io();
+    
     this.socket.on('metering', function(v) {
         that.metering = v;
     });
@@ -277,10 +278,10 @@ new Vue({
     },
     onSelectVideoInterval: function(v) {
         this.saveInterval = v.key;
-    },
+    },    
     onMediaSuccess: function(stream) {
       var that = this;
-
+      
       this.videoElement.srcObject = stream;
 
       this.videoElement.addEventListener('loadedmetadata', function() {

@@ -12,32 +12,39 @@ var videoDir = '/video';
 var videExt = '.webm';
 var mysql = require('mysql');
 var SerialPort = require('serialport');
+var sensorPort;
 
 SerialPort.list().then(function(list) {
-    console.log(list);
-});
-var sensorPort = new SerialPort('COM3', {
-  baudRate: 115200
-});
-sensorPort.on('error', function(err) {
-    console.log(err);
-});
-sensorPort.on('data', function(buffer) {
-    var str = buffer.toString(),
-        jsonStr = str
-          .replace('\b', '')
-          .replace('\r', '')
-          .replace('\n', '')
-          .replace('>', '');
-    try {
-        io.emit('metering', JSON.parse(jsonStr));
-    } catch(e) {
-        
-    }   
-});
+    list.forEach(function(port) {
+        if (port.manufacturer == 'STMicroelectronics.') {
+            sensorPort = new SerialPort(port.comName, {
+                baudRate: 115200
+            });
+            sensorPort.on('error', function(err) {
+                console.log(err);
+            });
+            sensorPort.on('data', function(buffer) {
+                var str = buffer.toString(),
+                    jsonStr = str
+                            .replace('\b', '')
+                            .replace('\r', '')
+                            .replace('\n', '')    
+                            .replace('>', '')    
+                try {
+                    var data = JSON.parse(jsonStr);
+                    console.log(data);
 
-io.on('connection', function(socket) {
-    //
+                    if (data.movement) {
+                        io.emit('movement', data.movement);   
+                    } else {
+                        io.emit('metering', data);
+                    }                    
+                } catch(e) {
+
+                }   
+            });
+        }
+    })
 });
 
 app.use(express.static('static'));
