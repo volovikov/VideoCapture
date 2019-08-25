@@ -126,7 +126,11 @@
                 <main-form-field>
                     <main-form-label>Освещенность, Люкс</main-form-label>
                     <main-form-input readonly="readonly" v-model="metering.lighting"></main-form-input>
-                </main-form-field>                
+                </main-form-field>   
+                <main-form-field>
+                    <main-form-label>Наличие движения</main-form-label>
+                    <main-form-input readonly="readonly" :value="movement == true ? 'Да' : 'Нет'"></main-form-input>
+                </main-form-field>
             </main-form>
         </main-tab-item>       
     </main-tab>

@@ -548,6 +548,11 @@ Vue.component('main-form-checkbox', {
             mainName: this.name
         }
     },
+    watch: {
+        mainValue(v) {
+            console.log(v);
+        }
+    },
     methods: {
         getKey: function() {
             return this.mainName;

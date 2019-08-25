@@ -52,10 +52,9 @@ SerialPort.list().then(function(list) {
                             .replace('\n', '')    
                             .replace('>', '')    
                 try {
-                    var data = JSON.parse(jsonStr);
-                    console.log(data);
+                    var data = JSON.parse(jsonStr);                    
 
-                    if (data.movement) {
+                    if (typeof data.movement != 'undefined') {
                         io.emit('movement', data.movement);   
                     } else {
                         io.emit('metering', data);
