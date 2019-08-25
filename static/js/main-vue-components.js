@@ -549,9 +549,7 @@ Vue.component('main-form-checkbox', {
         }
     },
     watch: {
-        mainValue(v) {
-            console.log(v);
-        }
+
     },
     methods: {
         getKey: function() {
