@@ -9,6 +9,8 @@ var serverPort = 9000;
 var dayDeep = 7;
 var staticDir = '/static';
 var videoDir = '/video';
+var pictureDir = '/picture';
+var pictureExt = '.jpg';
 var videExt = '.webm';
 var mysql = require('mysql');
 var SerialPort = require('serialport');
@@ -53,7 +55,7 @@ SerialPort.list().then(function(list) {
                             .replace('>', '')    
                 try {
                     var data = JSON.parse(jsonStr);                    
-
+console.log(data);
                     if (typeof data.movement != 'undefined') {
                         io.emit('movement', data.movement);   
                     } else {
@@ -228,7 +230,7 @@ app.post('/video-capture/day/list', function(req, res) {
         }        
     });
 });
-app.post('/upload', function(req, res) {
+app.post('/video/upload', function(req, res) {
     var buf = new Buffer(req.body.blob, 'base64'),
         saveInterval = req.body.saveInterval,
         d = new Date(),
@@ -253,6 +255,24 @@ app.post('/upload', function(req, res) {
                 });
             }
         }); 
+    });
+});
+app.post('/picture/upload', function(req, res) {
+    var buf = new Buffer(req.body.blob, 'base64'),        
+        d = new Date(),
+        currentDate = (d.toISOString().split('T')[0]),
+        currentUnixTime = Math.round(d.getTime() / 1000).toString(),
+        uploadDir = '.' + staticDir + pictureDir + '/' + currentDate,
+        fileName = currentUnixTime + pictureExt;
+    
+    fs.mkdir(uploadDir, function(e) {
+        fs.writeFile(uploadDir + '/' + fileName, buf, function(err) {
+            if (!err) {                
+                return res.json({
+                    success: true
+                });
+            }
+        });
     });
 });
 

@@ -49,7 +49,8 @@ var app = new Vue({
         isVideoSaveNow: false,
         isVideoCaptureSaveComplete: false,
         isVideoCaptureListLoaded: false,
-        isCaptureSave: false,
+        isCaptureSaveVideo: false,
+        isCaptureSavePicture: false,
         isCaptureAutoRun: false,
         videoCaptureDayList: [],
         videoCaptureRecordTblData: [],
@@ -58,7 +59,12 @@ var app = new Vue({
         activeVideoCaptureDay: null,
         width: null,
         height: null,
-        videoElement: null,        
+        pictureElement: null,
+        videoElement: null,  
+        videoStreamTrack: null,
+        imageCapture: null,
+        imageCaptureFn: null,
+        imageCaptureInterval: 200,
         mediaRecorder: null,
         videoCameraList: [],
         videoSaveIntervalList: videoSaveIntervalList,
@@ -120,6 +126,26 @@ var app = new Vue({
       },
       'metering.humidity': function(v) {
           this.saveMeteringValue();              
+      },
+      movement: function(v) {
+          var that = this;
+          
+          if (v && this.imageCapture) {
+              if (!this.isCaptureSavePicture) {
+                  return;
+              }
+              this.imageCaptureFn = setInterval(function() {
+                  that.imageCapture.takePhoto()
+                    .then(blob => {
+                        that.upload.call(that, blob);
+                    }) 
+                    .catch(error => {
+                        console.error('takePhoto() error:', error)
+                    });
+              }, this.imageCaptureInterval);
+          } else {
+              clearInterval(this.imageCaptureFn);
+          }          
       }
   },
   computed: {
@@ -175,8 +201,8 @@ var app = new Vue({
         if (r.selected) {
             that.saveInterval = r.key;
         }
-    });
-    this.videoElement = document.createElement('video');     
+    });    
+    this.videoElement = document.createElement('video');    
     this.videoElement = mergeProps(this.videoElement, {
         width: this.width,
         height: this.height
@@ -287,19 +313,18 @@ var app = new Vue({
       var that = this;
       
       this.videoElement.srcObject = stream;
-
+      this.videoStreamTrack = stream.getVideoTracks()[0];
+      this.imageCapture = new ImageCapture(this.videoStreamTrack);
+      
       this.videoElement.addEventListener('loadedmetadata', function() {
         if (!that.mediaRecorder) {
           that.mediaRecorder = new MediaStreamRecorder(stream);
         }            
         that.mediaRecorder.ondataavailable = function(blob) {
-            if (that.isCaptureSave && that.movement) {
-                that.upload(blob);
-            }            
+            that.upload(blob);
         };       
         that.mediaRecorder.start(that.saveInterval);
       });
-
       this.videoElement.play();
       document.getElementById('container').appendChild(this.videoElement);
     },
@@ -336,10 +361,13 @@ var app = new Vue({
         };
         reader.readAsDataURL(blob);
     },
-    upload: function(blob) {
-        if (!this.isCaptureSave) {
+    upload: function(blob) {        
+        if (!this.isCaptureSaveVideo && !this.isCaptureSavePicture) {
             return;
         }
+        var url = this.isCaptureSaveVideo 
+                ? '/video/upload' : '/picture/upload';        
+
         var that = this,
             displayTime = 10000,
             d = new Date(),
@@ -350,7 +378,7 @@ var app = new Vue({
                 saveInterval: that.saveInterval,
                 'blob': base64
             };         
-            that.$http.post('/upload', update).then(resp => {
+            that.$http.post(url, update).then(resp => {
                 that.isVideoCaptureSaveComplete = true;
                 that.videoCaptureBlockInfo = `Блок ${blockName} успешно сохранен`;
                 

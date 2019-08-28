@@ -98,13 +98,14 @@ Vue.component('main-col', {
         return {
             width: 0,
             isFirst: false,
-            isLast: false
+            isLast: false,
+            id: 0
         }
     },
     mounted: function() {
-        this.width = 100 / this.$parent.getChildrenCount();
+        this.width = 100 / this.$parent.getChildrenCount();        
         this.isFirst = this.$parent.getFirstChildrenUid() == this._uid ? true : false;
-        this.isLast = this.$parent.getLastChildrenUid() == this._uid ? true : false;
+        this.isLast = this.$parent.getLastChildrenUid() == this._uid ? true : false;    
     },
     template: `<div class="Col" style="float:left;" :style="{width:width+'%'}" :class="{First:isFirst, Last:isLast}"><slot></slot></div>` 
 });
