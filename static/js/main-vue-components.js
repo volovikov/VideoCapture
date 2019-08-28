@@ -162,18 +162,38 @@ Vue.component('main-form', {
     },
     template: '<div class="Form"><slot></slot></div>'
 });
-Vue.component('main-form-field', {    
+Vue.component('main-form-field', {
+    props: {
+        disabled: {
+            type: Boolean,
+            default: false
+        }
+    },
     data: function() {
         return {
-            isDisabled: false
+            
+        }
+    },
+    computed: {
+        isDisabled: function() {
+            return this.disabled;
+        }
+    },
+    watch: {
+        disabled: function(v) {
+            if (v) {
+                this.$children.forEach(function(el) {
+                    el && el.setDisableOn && el.setDisableOn();
+                })
+            }
         }
     },
     methods: {
         setDisableOn: function() {
-            this.isDisabled = true;
+            this.disabled = true;
         },
         setDisableOff: function() {
-            this.isDisabled = false;
+            this.disabled = false;
         }
     },
     template: '<div class="Row"><div class="Field" :class="{Disabled:isDisabled}"><slot></slot></div></div>'
@@ -541,7 +561,10 @@ Vue.component('main-form-checkbox', {
     computed: {
         isChecked: function() {
            return this.mainValue === true;
-       }
+        },
+        isDisabled: function() {
+            return this.$parent.isDisabled;
+        }
     },
     data: function() {
         return {
@@ -559,7 +582,18 @@ Vue.component('main-form-checkbox', {
         getValue: function() {
             return this.mainValue;
         },
+        setDisableOn: function() {
+            this.mainValue = false;
+            mainEventBus.$emit('focus-on', this);
+            this.$emit('input', this.mainValue);            
+        },
+        setDisbaleOff: function() {
+
+        },
         onClick: function() {
+            if (this.isDisabled) {
+                return;
+            }
             this.mainValue = !this.mainValue;
             mainEventBus.$emit('focus-on', this);
             this.$emit('input', this.mainValue);

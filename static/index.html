@@ -34,34 +34,7 @@
         <main-tab-item title="Видео">
             <h1>Захват видео</h1>
             <main-form ref='main-form' class="Flat">
-                <div v-if="isVideoSaveNow">
-                    <main-row>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать камеру если есть свет?</main-form-checkbox>
-                            </main-form-field>    
-                        </main-col>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
-                            </main-form-field>
-                        </main-col>                        
-                    </main-row>
-                    <main-row style='padding: 0 0 1em 0'>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-checkbox v-model="isCaptureSavePicture">Делать снимки экрана и отправлять их на сервер если есть движение?</main-form-checkbox>
-                            </main-form-field>
-                        </main-col>
-                   </main-row>                    
-                    <main-form-field>
-                        <div id="container"></div>
-                    </main-form-field>                                        
-                    <div v-if="isVideoCaptureSaveComplete" class="Message Good">
-                        <div class="Text">{{videoCaptureBlockInfo}}</div>
-                    </div>      
-                </div>
-                <div v-else>
+                <div v-if="!isVideoSaveNow">
                     <main-form-field ref='video-device-selector'>
                         <main-form-label>Выберите камеру</main-form-label>
                         <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
@@ -93,31 +66,44 @@
                                 <main-form-input v-model="threshold.forCameraStop"></main-form-input>                        
                             </main-form-field>
                         </main-col>
-                    </main-row>    
-                    <main-row style='padding: 1em 0'>
+                    </main-row>  
+                    <main-row>
                         <main-col>
                             <main-form-field>
-                                <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать камеру если есть свет?</main-form-checkbox>
-                            </main-form-field>    
+                                <main-form-label>Порог освещения, вкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>                        
+                            </main-form-field>
                         </main-col>
                         <main-col>
                             <main-form-field>
-                                <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
+                                <main-form-label>Порог освещения, выкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>                        
                             </main-form-field>
-                        </main-col>                        
+                        </main-col>
                     </main-row>
-                    <main-row style='padding: 0 0 1em 0'>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-checkbox v-model="isCaptureSavePicture">Делать снимки экрана и отправлять их на сервер если есть движение?</main-form-checkbox>
-                            </main-form-field>
-                        </main-col>
-                   </main-row>                   
-                    </main-form-field>
-                </div>
-                <main-row>
-                    <img id="screenshot">
+                </div>    
+                <main-row style='padding: 1em 0'>
+                    <main-col>
+                        <main-form-field>
+                            <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать камеру если света больше чем указанный в настройках порог?</main-form-checkbox>
+                        </main-form-field>    
+                    </main-col>                                           
                 </main-row>
+                <main-row style='padding: 0 0 1em 0'>
+                    <main-col>
+                        <main-form-field :disabled="!isCaptureAutoRun">
+                            <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
+                        </main-form-field>
+                    </main-col> 
+                    <main-col>
+                        <main-form-field :disabled="!isCaptureAutoRun">
+                            <main-form-checkbox v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
+                        </main-form-field>
+                    </main-col>
+               </main-row>
+                <main-row>
+                    <div id="container"></div>
+                </main-row>                
                 <main-button-group>
                     <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
                 </main-button-group>                
