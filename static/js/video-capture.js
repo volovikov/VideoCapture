@@ -49,12 +49,16 @@ var app = new Vue({
         isVideoSaveNow: false,
         isVideoCaptureSaveComplete: false,
         isVideoCaptureListLoaded: false,
+        isPictureCaptureListLoaded: false,
         isCaptureSaveVideo: false,
         isCaptureSavePicture: false,
         isCaptureAutoRun: false,
+        pictureCaptureDayList: [],
         videoCaptureDayList: [],
         videoCaptureRecordTblData: [],
+        pictureCaptureRecordTblData: [],
         videoCaptureRecordTblCols: ['Время', 'Интервал', 'Файл'],
+        pictureCaptureRecordTblCols: ['Время', 'Изображение'],
         videoCaptureBlockInfo: '',
         activeVideoCaptureDay: null,
         width: null,
@@ -208,10 +212,23 @@ var app = new Vue({
         height: this.height
     });
     this.reloadVideoCaptureDayList();
+    this.reloadPictureCaptureDayList();
   },
   methods: {
-    onClickLoadCaptureListBtn: function() {
+    onChangeTab: function(tab, tabIndex) {
+        if (!tab.index) {
+            return;
+        } else if (tab.title == 'Видео') {
+            this.reloadVideoCaptureDayList();
+        } else if (tab.index == 'Фотографии') {
+            this.reloadPictureCaptureDayList();
+        }
+    },
+    onClickLoadVideoCaptureListBtn: function() {
         this.reloadVideoCaptureTable();
+    },
+    onClickLoadPictureCaptureListBtn: function() {
+        this.reloadPictureCaptureTable();
     },
     saveMeteringValue: function() {
         var that = this;
@@ -223,6 +240,17 @@ var app = new Vue({
           success: function(r) {
               //
           }
+        });            
+    },
+    reloadPictureCaptureDayList: function() {
+        var that = this;
+
+        this.getPictureCaptureDayList(function(data) {
+            if (!data.length) {
+                return;
+            }
+            that.pictureCaptureDayList = data;
+            that.activePictureCaptureDay = data[0].key;            
         });            
     },
     reloadVideoCaptureDayList: function() {
@@ -246,9 +274,19 @@ var app = new Vue({
             that.isVideoCaptureListLoaded = true;
         });
     },
+    reloadPictureCaptureTable: function() {
+        var that = this;
+
+        this.getPictureCaptureRecordList(this.activePictureCaptureDay, function(data) {
+            that.pictureCaptureRecordTblData = data.map(function(r) {
+                return [r.datetime, '<a target="_blank" href="/picture/' + r.uploadDir + '/' + r.filename + '"><img width="150" src="/picture/' + r.uploadDir + '/' + r.filename + '"></a>'];
+            });
+            that.isPictureCaptureListLoaded = true;
+        });
+    },
     getVideoCaptureRecordList: function(day, callback) {
         var that = this,
-            url = '/video-capture/record/list',
+            url = '/video/record/list',
             data = {
                 day: day
             };
@@ -266,9 +304,48 @@ var app = new Vue({
                 }
             });
     },
+    getPictureCaptureRecordList: function(day, callback) {
+        var that = this,
+            url = '/picture/record/list',
+            data = {
+                day: day
+            };
+
+        $.ajax({
+                url: url,
+                data: data,
+                type: 'post',
+                success: function(r) {
+                    if (!r.success) {
+                        that.errorMessage = r.error;                                            
+                    } else {
+                        callback && callback(r.data);               
+                    }                                                                    
+                }
+            });
+    },    
     getVideoCaptureDayList: function(callback) {
         var that = this,
-            url = '/video-capture/day/list',
+            url = '/video/day/list',
+            data = {
+            };
+
+        $.ajax({
+                url: url,
+                data: data,
+                type: 'post',
+                success: function(r) {
+                    if (!r.success) {
+                        that.errorMessage = r.error;                                            
+                    } else {
+                        callback && callback(r.data);               
+                    }                                                                    
+                }
+            });
+    },
+    getPictureCaptureDayList: function(callback) {
+        var that = this,
+            url = '/picture/day/list',
             data = {
             };
 
@@ -288,6 +365,10 @@ var app = new Vue({
     onSelectVideoCaptureDay: function(v) {
         this.activeVideoCaptureDay = v.key;
         this.isVideoCaptureListLoaded = false;
+    },
+    onSelectPictureCaptureDay: function(v) {
+        this.activePictureCaptureDay = v.key;
+        this.isPictureCaptureListLoaded = false;
     },
     onSelectVideoSize: function(v) {
         var that = this; 

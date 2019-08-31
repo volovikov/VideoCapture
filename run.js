@@ -168,9 +168,27 @@ var getVideoCaptureRecordList = function(day, callback) {
         callback && callback(err, results);
     });
 };
+var getPictureCaptureRecordList = function(day, callback) {
+    query = "\n SELECT * FROM `picturecapture`"
+           +"\n WHERE DATE_FORMAT(`datetime`, '%Y-%m-%e') = '" + day + "'"
+           +"\n ORDER BY `datetime` DESC";
+
+    connection.query(query, function(err, results) {
+        callback && callback(err, results);
+    });
+};
 var getVideoCaptureDayList = function(dayDeep, callback) {        
     query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
             +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `videocapture`"
+            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
+
+    connection.query(query, function(err, results) {
+        callback && callback(err, results);
+    });
+};
+var getPictureCaptureDayList = function(dayDeep, callback) {        
+    query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
+            +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `picturecapture`"
             +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
 
     connection.query(query, function(err, results) {
@@ -185,16 +203,24 @@ var saveVideoCaptureRec = function(data, callback) {
         callback && callback(results);
     });
 };
+var savePictureCaptureRec = function(data, callback) {
+    query = "\n INSERT INTO `picturecapture` (`id`,`filename`, `datetime`, `uploadDir`)"
+            +"\n VALUES(null, '" + data.fileName + "', FROM_UNIXTIME('" + data.dateTime + "'), '" + data.uploadDir + "')";
+
+    connection.query(query, function(err, results) {
+        callback && callback(results);
+    });
+};
 
 app.all('*', function(req, res, next) {
    console.log('Run erase garbage procedure');
    eraseGarbage();
    next();
 });
-app.get('/video-capture/record/get', function(req, res) {
+app.get('/video/record/get', function(req, res) {
     
 });
-app.post('/video-capture/record/list', function(req, res) {
+app.post('/video/record/list', function(req, res) {
     var day = req.body.day;
     
     getVideoCaptureRecordList(day, function(err, data) {
@@ -211,13 +237,49 @@ app.post('/video-capture/record/list', function(req, res) {
         
     });   
 });
-app.post('/video-capture/day/list', function(req, res) {
+app.post('/picture/record/list', function(req, res) {
+    var day = req.body.day;
+    
+    getPictureCaptureRecordList(day, function(err, data) {
+        if (!err) {
+            res.json({
+                success: true,
+                data: data
+            });
+        } else {
+            res.json({
+                success: false
+            })
+        }
+        
+    });   
+});
+app.post('/video/day/list', function(req, res) {
     var dd = req.body.dayDeep;
     
-    if (typeof ddayDeep == 'undefined') {
+    if (typeof dd == 'undefined') {
         dd = dayDeep;
     }  
     getVideoCaptureDayList(dd, function(err, data) {
+        if (!err) {
+            res.json({
+                success: true,
+                data: data
+            });
+        } else {
+            res.json({
+                success: false
+            });
+        }        
+    });
+});
+app.post('/picture/day/list', function(req, res) {
+    var dd = req.body.dayDeep;
+    
+    if (typeof dd == 'undefined') {
+        dd = dayDeep;
+    }  
+    getPictureCaptureDayList(dd, function(err, data) {
         if (!err) {
             res.json({
                 success: true,
@@ -267,7 +329,14 @@ app.post('/picture/upload', function(req, res) {
     
     fs.mkdir(uploadDir, function(e) {
         fs.writeFile(uploadDir + '/' + fileName, buf, function(err) {
-            if (!err) {                
+            if (!err) {
+                var data = {
+                    uploadDir: currentDate,
+                    dateTime: currentUnixTime,
+                    fileName: fileName
+                };
+                savePictureCaptureRec(data);
+                
                 return res.json({
                     success: true
                 });

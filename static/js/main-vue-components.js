@@ -648,7 +648,7 @@ Vue.component('main-tab', {
             } else {
                 this.activeSectionIndex = index;
             }
-            this.$emit('click', index);
+            this.$emit('click', this.$children[index], index);
         }
     },
     template: '<div class="TabPanel">'+

@@ -30,7 +30,7 @@
 </head>
 <body>
   <div id="main-panel" style="margin: 1em auto">
-    <main-tab bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
+    <main-tab @click="onChangeTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Видео">
             <h1>Захват видео</h1>
             <main-form ref='main-form' class="Flat">
@@ -85,18 +85,18 @@
                 <main-row style='padding: 1em 0'>
                     <main-col>
                         <main-form-field>
-                            <main-form-checkbox v-model="isCaptureAutoRun">Автоматически влючать камеру если света больше чем указанный в настройках порог?</main-form-checkbox>
+                            <main-form-checkbox v-model="isCaptureAutoRun">Автоматически включать и выключать камеру в соответствии с настройками порога освещения?</main-form-checkbox>
                         </main-form-field>    
                     </main-col>                                           
                 </main-row>
                 <main-row style='padding: 0 0 1em 0'>
                     <main-col>
-                        <main-form-field :disabled="!isCaptureAutoRun">
+                        <main-form-field>
                             <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
                         </main-form-field>
                     </main-col> 
                     <main-col>
-                        <main-form-field :disabled="!isCaptureAutoRun">
+                        <main-form-field>
                             <main-form-checkbox v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
                         </main-form-field>
                     </main-col>
@@ -109,7 +109,7 @@
                 </main-button-group>                
             </main-form>
         </main-tab-item>   
-        <main-tab-item title="Просмотр">
+        <main-tab-item title="Видео">
             <h1>Просмотр видео</h1>
             <main-form ref="video-control-form" class="Flat" style="margin-bottom: 2em">
                 <main-form-field>
@@ -118,10 +118,23 @@
                 </main-form-field>
             </main-form>
             <main-button-group>
-                <main-button selected="selected" :click="onClickLoadCaptureListBtn">Загрузить</main-button>                    
+                <main-button selected="selected" :click="onClickLoadVideoCaptureListBtn">Загрузить</main-button>                    
             </main-button-group>            
             <main-table v-if="isVideoCaptureListLoaded" style="margin-top: 1em" :columns="videoCaptureRecordTblCols" :data="videoCaptureRecordTblData"></main-table>
         </main-tab-item>    
+        <main-tab-item title="Фотографии">
+            <h1>Просмотр снимков экрана</h1>
+            <main-form ref="picture-control-form" class="Flat" style="margin-bottom: 2em">
+                <main-form-field>
+                    <main-form-label>День</main-form-label>
+                    <main-form-select @select="onSelectPictureCaptureDay" name="pictureCaptureDay" :list="pictureCaptureDayList"></main-form-select>
+                </main-form-field>
+            </main-form>
+            <main-button-group>
+                <main-button selected="selected" :click="onClickLoadPictureCaptureListBtn">Загрузить</main-button>                    
+            </main-button-group>            
+            <main-table v-if="isPictureCaptureListLoaded" style="margin-top: 1em" :columns="pictureCaptureRecordTblCols" :data="pictureCaptureRecordTblData"></main-table>
+        </main-tab-item>               
         <main-tab-item title="Среда">               
             <h1>Значение среды</h1>
             <main-form class="Flat">
