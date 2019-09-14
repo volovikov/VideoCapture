@@ -82,14 +82,14 @@
                         </main-col>
                     </main-row>
                 </div>    
-                <main-row style='padding: 1em 0'>
+                <main-row style='padding: 1em 0 0 0'>
                     <main-col>
                         <main-form-field>
                             <main-form-checkbox v-model="isCaptureAutoRun">Автоматически включать и выключать камеру в соответствии с настройками порога освещения?</main-form-checkbox>
                         </main-form-field>    
                     </main-col>                                           
                 </main-row>
-                <main-row style='padding: 0 0 1em 0'>
+                <main-row>
                     <main-col>
                         <main-form-field>
                             <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
@@ -102,11 +102,18 @@
                     </main-col>
                </main-row>
                 <main-row>
-                    <div id="container"></div>
-                </main-row>                
-                <main-button-group>
-                    <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
-                </main-button-group>                
+                    <main-col>
+                        <div id="container"></div>
+                    </main-col>                    
+                </main-row>                        
+                <main-row>
+                    <main-col>
+                        <main-button-group style="margin-top: 1em">
+                            <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
+                        </main-button-group>                
+                    </main-col>
+                </main-row>        
+                <main-message style="position: fixed; left: 10px; top: 10px; width: 300px;" v-show="isVideoCaptureSaveComplete" :text="videoCaptureBlockInfo"></main-message>
             </main-form>
         </main-tab-item>   
         <main-tab-item title="Видео">

@@ -39,6 +39,8 @@ var escapeJSON = function(json) {
 
 SerialPort.list().then(function(list) {
     list.forEach(function(port) {
+        console.log(port);        
+        
         if (port.manufacturer == 'STMicroelectronics.') {
             sensorPort = new SerialPort(port.comName, {
                 baudRate: 115200
@@ -55,7 +57,8 @@ SerialPort.list().then(function(list) {
                             .replace('>', '')    
                 try {
                     var data = JSON.parse(jsonStr);                    
-console.log(data);
+                    console.log(data);
+                    
                     if (typeof data.movement != 'undefined') {
                         io.emit('movement', data.movement);   
                     } else {

@@ -729,7 +729,7 @@ Vue.component('main-table', {
         </div>`
 });
 Vue.component('main-button-group', {
-    template: '<div class="Buttons" style="margin-top: 2em"><slot></slot></div>'
+    template: '<div class="Buttons"><slot></slot></div>'
 });
 Vue.component('main-button', {
     data: function() {
@@ -748,3 +748,33 @@ Vue.component('main-button', {
     },
     template: '<div v-on:click.stop="click" class="Button" :class="{\'Selected\':selected}"><slot></slot></div>'
 });
+Vue.component('main-message', {
+    props: {
+        type: {
+            type: String,
+            default: 'good' // good, info, attention, error
+        },
+        text: String
+    },
+    computed: {
+        cls: function() {
+            switch (this.type) {
+                default:
+                case 'good':
+                    return 'Good';
+                case 'info':
+                    return 'Info';
+                case 'attention':
+                    return 'Attention';
+                case 'error':
+                    return 'Error';
+            }
+        }
+    },
+    data: function() {
+        return {
+            
+        }
+    },
+    template: '<div class="Message" :class="cls"><div class="Text">{{text}}</div></div>'
+})

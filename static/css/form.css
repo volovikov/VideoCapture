@@ -19,6 +19,11 @@ root {
 .Center {
     margin: 0 auto;
 }
+.Row:after {
+    content: " ";
+    display: table;
+    clear: both;
+}
 .Col {
     display: inline-block;
     vertical-align: top;

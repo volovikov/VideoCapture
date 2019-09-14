@@ -448,7 +448,7 @@ var app = new Vue({
         }
         var url = this.isCaptureSaveVideo 
                 ? '/video/upload' : '/picture/upload';        
-
+                
         var that = this,
             displayTime = 10000,
             d = new Date(),
@@ -457,7 +457,7 @@ var app = new Vue({
         this.blobToBase64(blob, function(base64){
             var update = {
                 saveInterval: that.saveInterval,
-                'blob': base64
+                blob: base64
             };         
             that.$http.post(url, update).then(resp => {
                 that.isVideoCaptureSaveComplete = true;
@@ -467,6 +467,24 @@ var app = new Vue({
                     that.isVideoCaptureSaveComplete = false;
                 }, displayTime);
             }); 
+            var data = new FormData(),
+                externalUrl = 'http://karatespb.ru/picture/capture/upload';
+
+            data.append('file', blob);
+            
+            $.ajax({
+                url: externalUrl,
+                data: data,
+                type: 'post',
+                contentType: false,
+                processData: false,
+                success: function(resp) {
+                    var r = JSON.parse(resp);
+                },
+                error: function() {
+                    console.log(err);
+                }
+            });
         });            
     }
   }
