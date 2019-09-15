@@ -30,6 +30,7 @@
 </head>
 <body>
   <div id="main-panel" style="margin: 1em auto">
+    <main-message style="position: fixed; left: 10px; top: 10px; width: 300px;" v-show="isVideoCaptureSaveComplete" :text="videoCaptureBlockInfo"></main-message>
     <main-tab @click="onChangeTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Видео">
             <h1>Захват видео</h1>
@@ -112,8 +113,7 @@
                             <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
                         </main-button-group>                
                     </main-col>
-                </main-row>        
-                <main-message style="position: fixed; left: 10px; top: 10px; width: 300px;" v-show="isVideoCaptureSaveComplete" :text="videoCaptureBlockInfo"></main-message>
+                </main-row>                        
             </main-form>
         </main-tab-item>   
         <main-tab-item title="Видео">
