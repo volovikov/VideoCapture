@@ -1,4 +1,5 @@
-var videoSaveIntervalList = [{
+var videoSaveIntervalList = [
+  {
     key: 5000,
     value: '5 сек'
   },{
@@ -16,35 +17,38 @@ var videoSaveIntervalList = [{
     value: '2 мин'
   },{
     key: 300000,
-    value: '5 мин'              
-  }];
-  
-var videoSizeList = [{
+    value: '5 мин'
+  }
+];
+
+var videoSizeList = [
+  {
     key: '320x240',
     value: '320x240',
     width: 320,
     height: 240
   },{
     key: '640x480',
-    value: '640x480',            
+    value: '640x480',
     width: 640,
-    height: 480,               
+    height: 480,
     selected: true
   },{
     key: '800x600',
     value: '800x600',
     width: 800,
-    height: 600        
+    height: 600
   },{
     key: '1024x768',
     value: '1024x768',
     width: 1024,
-    height: 768,            
-  }];
+    height: 768,
+  }
+];
 
 var app = new Vue({
   el: '#main-panel',
-  data: function() {    
+  data: function() {
     return {
         isVideoSaveNow: false,
         isVideoCaptureSaveComplete: false,
@@ -64,7 +68,7 @@ var app = new Vue({
         width: null,
         height: null,
         pictureElement: null,
-        videoElement: null,  
+        videoElement: null,
         videoStreamTrack: null,
         imageCapture: null,
         imageCaptureFn: null,
@@ -74,10 +78,10 @@ var app = new Vue({
         videoSaveIntervalList: videoSaveIntervalList,
         videoSizeList: videoSizeList,
         videoRecordDeviceId: null,
-        audioRecordDeviceId: null,          
+        audioRecordDeviceId: null,
         saveMediaSettings: {
           audio: true,
-          video: {               
+          video: {
               deviceId: {exact: null},
               width: {exact: null},
               height: {exact: null}
@@ -111,7 +115,7 @@ var app = new Vue({
           if (!this.isCaptureAutoRun) {
               return;
           }
-          var btn = this.$refs['start-stop-rec-btn'];                  
+          var btn = this.$refs['start-stop-rec-btn'];
 
           if (v >= this.threshold.forCameraStart) {
               if (!this.isVideoSaveNow) {
@@ -123,17 +127,17 @@ var app = new Vue({
                   btn.click();
                   this.saveMeteringValue();
               }
-          }              
+          }
       },
       'metering.temp': function(v) {
           this.saveMeteringValue()
       },
       'metering.humidity': function(v) {
-          this.saveMeteringValue();              
+          this.saveMeteringValue();
       },
       movement: function(v) {
           var that = this;
-          
+
           if (v && this.imageCapture) {
               if (!this.isCaptureSavePicture) {
                   return;
@@ -142,14 +146,14 @@ var app = new Vue({
                   that.imageCapture.takePhoto()
                     .then(blob => {
                         that.upload.call(that, blob);
-                    }) 
+                    })
                     .catch(error => {
                         console.error('takePhoto() error:', error)
                     });
               }, this.imageCaptureInterval);
           } else {
               clearInterval(this.imageCaptureFn);
-          }          
+          }
       }
   },
   computed: {
@@ -167,11 +171,11 @@ var app = new Vue({
         }
     }
   },
-  mounted: function() {
+mounted: function() {
     var that = this;
 
     this.socket = io();
-    
+
     this.socket.on('metering', function(v) {
         that.metering = v;
     });
@@ -205,8 +209,8 @@ var app = new Vue({
         if (r.selected) {
             that.saveInterval = r.key;
         }
-    });    
-    this.videoElement = document.createElement('video');    
+    });
+    this.videoElement = document.createElement('video');
     this.videoElement = mergeProps(this.videoElement, {
         width: this.width,
         height: this.height
@@ -240,7 +244,7 @@ var app = new Vue({
           success: function(r) {
               //
           }
-        });            
+        });
     },
     reloadPictureCaptureDayList: function() {
         var that = this;
@@ -250,8 +254,8 @@ var app = new Vue({
                 return;
             }
             that.pictureCaptureDayList = data;
-            that.activePictureCaptureDay = data[0].key;            
-        });            
+            that.activePictureCaptureDay = data[0].key;
+        });
     },
     reloadVideoCaptureDayList: function() {
         var that = this;
@@ -261,8 +265,8 @@ var app = new Vue({
                 return;
             }
             that.videoCaptureDayList = data;
-            that.activeVideoCaptureDay = data[0].key;            
-        });            
+            that.activeVideoCaptureDay = data[0].key;
+        });
     },
     reloadVideoCaptureTable: function() {
         var that = this;
@@ -297,10 +301,10 @@ var app = new Vue({
                 type: 'post',
                 success: function(r) {
                     if (!r.success) {
-                        that.errorMessage = r.error;                                            
+                        that.errorMessage = r.error;
                     } else {
-                        callback && callback(r.data);               
-                    }                                                                    
+                        callback && callback(r.data);
+                    }
                 }
             });
     },
@@ -317,13 +321,13 @@ var app = new Vue({
                 type: 'post',
                 success: function(r) {
                     if (!r.success) {
-                        that.errorMessage = r.error;                                            
+                        that.errorMessage = r.error;
                     } else {
-                        callback && callback(r.data);               
-                    }                                                                    
+                        callback && callback(r.data);
+                    }
                 }
             });
-    },    
+    },
     getVideoCaptureDayList: function(callback) {
         var that = this,
             url = '/video/day/list',
@@ -336,10 +340,10 @@ var app = new Vue({
                 type: 'post',
                 success: function(r) {
                     if (!r.success) {
-                        that.errorMessage = r.error;                                            
+                        that.errorMessage = r.error;
                     } else {
-                        callback && callback(r.data);               
-                    }                                                                    
+                        callback && callback(r.data);
+                    }
                 }
             });
     },
@@ -355,10 +359,10 @@ var app = new Vue({
                 type: 'post',
                 success: function(r) {
                     if (!r.success) {
-                        that.errorMessage = r.error;                                            
+                        that.errorMessage = r.error;
                     } else {
-                        callback && callback(r.data);               
-                    }                                                                    
+                        callback && callback(r.data);
+                    }
                 }
             });
     },
@@ -371,7 +375,7 @@ var app = new Vue({
         this.isPictureCaptureListLoaded = false;
     },
     onSelectVideoSize: function(v) {
-        var that = this; 
+        var that = this;
 
         this.videoSizeList.forEach(function(r) {
             if (r.key == v.key) {
@@ -383,27 +387,27 @@ var app = new Vue({
                     muted: true,
                     width: r.width,
                     height: r.height
-                });            
+                });
             }
-        });            
+        });
     },
     onSelectVideoInterval: function(v) {
         this.saveInterval = v.key;
-    },    
+    },
     onMediaSuccess: function(stream) {
       var that = this;
-      
+
       this.videoElement.srcObject = stream;
       this.videoStreamTrack = stream.getVideoTracks()[0];
       this.imageCapture = new ImageCapture(this.videoStreamTrack);
-      
+
       this.videoElement.addEventListener('loadedmetadata', function() {
         if (!that.mediaRecorder) {
           that.mediaRecorder = new MediaStreamRecorder(stream);
-        }            
+        }
         that.mediaRecorder.ondataavailable = function(blob) {
             that.upload(blob);
-        };       
+        };
         that.mediaRecorder.start(that.saveInterval);
       });
       this.videoElement.play();
@@ -442,13 +446,13 @@ var app = new Vue({
         };
         reader.readAsDataURL(blob);
     },
-    upload: function(blob) {        
+    upload: function(blob) {
         if (!this.isCaptureSaveVideo && !this.isCaptureSavePicture) {
             return;
         }
-        var url = this.isCaptureSaveVideo 
-                ? '/video/upload' : '/picture/upload';        
-                
+        var url = this.isCaptureSaveVideo
+                ? '/video/upload' : '/picture/upload';
+
         var that = this,
             displayTime = 10000,
             d = new Date(),
@@ -458,20 +462,20 @@ var app = new Vue({
             var update = {
                 saveInterval: that.saveInterval,
                 blob: base64
-            };         
+            };
             that.$http.post(url, update).then(resp => {
                 that.isVideoCaptureSaveComplete = true;
                 that.videoCaptureBlockInfo = `Блок ${blockName} успешно сохранен`;
-                
+
                 setInterval(function() {
                     that.isVideoCaptureSaveComplete = false;
                 }, displayTime);
-            }); 
+            });
             var data = new FormData(),
                 externalUrl = 'http://karatespb.ru/picture/capture/upload';
 
             data.append('file', blob);
-            
+
             $.ajax({
                 url: externalUrl,
                 data: data,
@@ -485,7 +489,7 @@ var app = new Vue({
                     console.log(err);
                 }
             });
-        });            
+        });
     }
   }
 });
