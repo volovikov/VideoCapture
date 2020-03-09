@@ -37,12 +37,12 @@ var escapeJSON = function(json) {
   }) + '"' : '"' + json + '"';
 };
 
+var sensorComPort = 'COM3';
+
 SerialPort.list().then(function(list) {
-    list.forEach(function(port) {
-        console.log(port);        
-        
-        if (port.manufacturer == 'STMicroelectronics.') {
-            sensorPort = new SerialPort(port.comName, {
+    list.forEach(function(port) {        
+        if (port.manufacturer == 'STMicroelectronics.' || port.path == sensorComPort) {
+            sensorPort = new SerialPort(port.path, {
                 baudRate: 115200
             });
             sensorPort.on('error', function(err) {

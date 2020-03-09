@@ -91,8 +91,8 @@ var app = new Vue({
             humidity: '',
         },
         threshold: {
-            forCameraStart: 20,
-            forCameraStop: 10,
+            forCameraStart: 15,
+            forCameraStop: 8,
         },
         mainDomain: 'http://karatespb.ru'
     };
@@ -184,7 +184,7 @@ var app = new Vue({
                 if (device.kind == 'videoinput') {
                     that.videoCameraList.push({
                         key: device.deviceId,
-                        value: device.label
+                        value: device.label || device.kind
                     });
                 }
             });
