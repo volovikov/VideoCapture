@@ -22,5 +22,9 @@
     "request": "^2.88.2",
     "serialport": "^8.0.7",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "node-windows": "^1.0.0-beta.1",
+    "nodemon": "^2.0.4"
   }
 }

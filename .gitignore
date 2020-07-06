@@ -1,3 +1,5 @@
 /static/video/
 /static/picture/
 /node_modules/
+/daemon
+package-lock.json

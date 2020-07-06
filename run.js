@@ -40,7 +40,7 @@ var escapeJSON = function(json) {
 var sensorComPort = 'COM3';
 
 SerialPort.list().then(function(list) {
-    list.forEach(function(port) {        
+    list.forEach(function(port) {
         if (port.manufacturer == 'STMicroelectronics.' || port.path == sensorComPort) {
             sensorPort = new SerialPort(port.path, {
                 baudRate: 115200
@@ -53,20 +53,20 @@ SerialPort.list().then(function(list) {
                     jsonStr = str
                             .replace('\b', '')
                             .replace('\r', '')
-                            .replace('\n', '')    
-                            .replace('>', '')    
+                            .replace('\n', '')
+                            .replace('>', '')
                 try {
-                    var data = JSON.parse(jsonStr);                    
+                    var data = JSON.parse(jsonStr);
                     console.log(data);
-                    
+
                     if (typeof data.movement != 'undefined') {
-                        io.emit('movement', data.movement);   
+                        io.emit('movement', data.movement);
                     } else {
                         io.emit('metering', data);
-                    }                    
+                    }
                 } catch(e) {
 
-                }   
+                }
             });
         }
     })
@@ -79,8 +79,10 @@ app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 var databaseConfig = {
     host: 'localhost',
     user: 'root',
-    password : '',
-    database : 'videocapture'
+    password : 'root',
+    database : 'videocapture',
+    port: 3306,
+    //socketPath: 'c:/Program Files/var/run/mysqld/mysqld.sock'
 };
 var handleDisconnect = function() {
   connection = mysql.createConnection(databaseConfig);
@@ -94,7 +96,7 @@ var handleDisconnect = function() {
 
   connection.on('error', function(err) {
     console.log('db error', err);
-    
+
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
       handleDisconnect();
     } else {
@@ -120,7 +122,7 @@ var eraseGarbage = function() {
     };
     var getValidDay = function() {
         var v = d.getDate();
-        
+
         if (v<10) {
             return '0' + v;
         } else {
@@ -134,7 +136,7 @@ var eraseGarbage = function() {
         d = new Date();
         d.setDate(d.getDate()-i);
         validDateArr.push([getValidYear(), getValidMonth(), getValidDay()].join('-'));
-    }    
+    }
     var getDirectories = function(path) {
         return fs.readdirSync(path).filter(function (file) {
           return fs.statSync(path+'/'+file).isDirectory();
@@ -153,8 +155,8 @@ var eraseGarbage = function() {
           fs.rmdirSync(path);
         }
     };
-    var pathOffset = '.' + staticDir + videoDir + '/'; 
-    
+    var pathOffset = '.' + staticDir + videoDir + '/';
+
     getDirectories(pathOffset).forEach(function(d) {
         if (validDateArr.indexOf(d) == -1) {
             console.log('Found old video files ' + pathOffset + d);
@@ -180,7 +182,7 @@ var getPictureCaptureRecordList = function(day, callback) {
         callback && callback(err, results);
     });
 };
-var getVideoCaptureDayList = function(dayDeep, callback) {        
+var getVideoCaptureDayList = function(dayDeep, callback) {
     query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
             +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `videocapture`"
             +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
@@ -189,7 +191,7 @@ var getVideoCaptureDayList = function(dayDeep, callback) {
         callback && callback(err, results);
     });
 };
-var getPictureCaptureDayList = function(dayDeep, callback) {        
+var getPictureCaptureDayList = function(dayDeep, callback) {
     query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
             +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `picturecapture`"
             +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
@@ -221,11 +223,11 @@ app.all('*', function(req, res, next) {
    next();
 });
 app.get('/video/record/get', function(req, res) {
-    
+
 });
 app.post('/video/record/list', function(req, res) {
     var day = req.body.day;
-    
+
     getVideoCaptureRecordList(day, function(err, data) {
         if (!err) {
             res.json({
@@ -237,12 +239,12 @@ app.post('/video/record/list', function(req, res) {
                 success: false
             })
         }
-        
-    });   
+
+    });
 });
 app.post('/picture/record/list', function(req, res) {
     var day = req.body.day;
-    
+
     getPictureCaptureRecordList(day, function(err, data) {
         if (!err) {
             res.json({
@@ -254,15 +256,15 @@ app.post('/picture/record/list', function(req, res) {
                 success: false
             })
         }
-        
-    });   
+
+    });
 });
 app.post('/video/day/list', function(req, res) {
     var dd = req.body.dayDeep;
-    
+
     if (typeof dd == 'undefined') {
         dd = dayDeep;
-    }  
+    }
     getVideoCaptureDayList(dd, function(err, data) {
         if (!err) {
             res.json({
@@ -273,15 +275,15 @@ app.post('/video/day/list', function(req, res) {
             res.json({
                 success: false
             });
-        }        
+        }
     });
 });
 app.post('/picture/day/list', function(req, res) {
     var dd = req.body.dayDeep;
-    
+
     if (typeof dd == 'undefined') {
         dd = dayDeep;
-    }  
+    }
     getPictureCaptureDayList(dd, function(err, data) {
         if (!err) {
             res.json({
@@ -292,7 +294,7 @@ app.post('/picture/day/list', function(req, res) {
             res.json({
                 success: false
             });
-        }        
+        }
     });
 });
 app.post('/video/upload', function(req, res) {
@@ -303,10 +305,10 @@ app.post('/video/upload', function(req, res) {
         currentUnixTime = Math.round(d.getTime() / 1000).toString(),
         uploadDir = '.' + staticDir + videoDir + '/' + currentDate,
         fileName = currentUnixTime + videExt;
-    
+
     fs.mkdir(uploadDir, function(e) {
         fs.writeFile(uploadDir + '/' + fileName, buf, function(err) {
-            if (!err) {                
+            if (!err) {
                 var data = {
                     uploadDir: currentDate,
                     dateTime: currentUnixTime,
@@ -314,22 +316,22 @@ app.post('/video/upload', function(req, res) {
                     saveInterval: saveInterval
                 };
                 saveVideoCaptureRec(data);
-                
+
                 return res.json({
                     success: true
                 });
             }
-        }); 
+        });
     });
 });
 app.post('/picture/upload', function(req, res) {
-    var buf = new Buffer(req.body.blob, 'base64'),        
+    var buf = new Buffer(req.body.blob, 'base64'),
         d = new Date(),
         currentDate = (d.toISOString().split('T')[0]),
         currentUnixTime = Math.round(d.getTime() / 1000).toString(),
         uploadDir = '.' + staticDir + pictureDir + '/' + currentDate,
         fileName = currentUnixTime + pictureExt;
-    
+
     fs.mkdir(uploadDir, function(e) {
         fs.writeFile(uploadDir + '/' + fileName, buf, function(err) {
             if (!err) {
@@ -339,7 +341,7 @@ app.post('/picture/upload', function(req, res) {
                     fileName: fileName
                 };
                 savePictureCaptureRec(data);
-                
+
                 return res.json({
                     success: true
                 });
@@ -348,6 +350,6 @@ app.post('/picture/upload', function(req, res) {
     });
 });
 
-http.listen(serverPort, function() {    
+http.listen(serverPort, function() {
     console.log(`Server is started at port ${serverPort}\nTo close use Ctrl+C`);
 });

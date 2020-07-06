@@ -1,3 +1,6 @@
+CREATE DATABASE `VideoCapture`;
+
+USE `VideoCapture`;
 
 CREATE TABLE `metering` (
   `id` int(11) NOT NULL,
