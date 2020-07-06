@@ -40,6 +40,9 @@ var escapeJSON = function(json) {
 var sensorComPort = 'COM3';
 
 SerialPort.list().then(function(list) {
+    console.log('The following ports were found:');
+    console.log(list);
+
     list.forEach(function(port) {
         if (port.manufacturer == 'STMicroelectronics.' || port.path == sensorComPort) {
             sensorPort = new SerialPort(port.path, {
@@ -49,12 +52,13 @@ SerialPort.list().then(function(list) {
                 console.log(err);
             });
             sensorPort.on('data', function(buffer) {
-                var str = buffer.toString(),
+                var str = buffer.slice(4).toString(),
                     jsonStr = str
                             .replace('\b', '')
                             .replace('\r', '')
                             .replace('\n', '')
                             .replace('>', '')
+
                 try {
                     var data = JSON.parse(jsonStr);
                     console.log(data);
@@ -62,7 +66,7 @@ SerialPort.list().then(function(list) {
                     if (typeof data.movement != 'undefined') {
                         io.emit('movement', data.movement);
                     } else {
-                        io.emit('metering', data);
+                        io.emit('lighting', data.lighting);
                     }
                 } catch(e) {
 

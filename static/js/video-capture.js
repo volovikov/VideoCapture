@@ -89,11 +89,7 @@ var app = new Vue({
         },
         saveInterval: 5000,
         movement: false,
-        metering: {
-            lighting: '',
-            temp: '',
-            humidity: '',
-        },
+        lighting: '',
         threshold: {
             forCameraStart: 15,
             forCameraStop: 8,
@@ -111,7 +107,7 @@ var app = new Vue({
       videoRecordDeviceId: function(v) {
           this.saveMediaSettings.video.deviceId.exact = v;
       },
-      'metering.lighting': function(v) {
+      lighting: function(v) {
           if (!this.isCaptureAutoRun) {
               return;
           }
@@ -128,12 +124,6 @@ var app = new Vue({
                   this.saveMeteringValue();
               }
           }
-      },
-      'metering.temp': function(v) {
-          this.saveMeteringValue()
-      },
-      'metering.humidity': function(v) {
-          this.saveMeteringValue();
       },
       movement: function(v) {
           var that = this;
@@ -171,13 +161,13 @@ var app = new Vue({
         }
     }
   },
-mounted: function() {
+  mounted: function() {
     var that = this;
 
     this.socket = io();
 
-    this.socket.on('metering', function(v) {
-        that.metering = v;
+    this.socket.on('lighting', function(v) {
+        that.lighting = v;
     });
     this.socket.on('movement', function(v) {
         that.movement = v;
@@ -239,7 +229,7 @@ mounted: function() {
 
         $.ajax({
           url: this.mainDomain + '/metering/save',
-          data: this.metering,
+          data: {lighting: this.lighting},
           type: 'post',
           success: function(r) {
               //

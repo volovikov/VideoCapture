@@ -21,7 +21,7 @@
   <script src="js/vue-2.6.8.js"></script>
   <script src="js/media-stream-recorder.js"></script>
   <script src="js/vue-resource-1.5.1.js"></script>
-  <script src="js/main-vue-components.js"></script>  
+  <script src="js/main-vue-components.js"></script>
   <style>
       .TabPanel .Body h1 {
           margin-bottom: 0px;
@@ -52,50 +52,50 @@
                                 <main-form-label>Интервал записи (сек)</main-form-label>
                                 <main-form-select @select="onSelectVideoInterval" :list='videoSaveIntervalList'></main-form-select>
                             </main-form-field>
-                        </main-col>                        
-                    </main-row>                    
+                        </main-col>
+                    </main-row>
                     <main-row>
                         <main-col>
                             <main-form-field>
                                 <main-form-label>Порог освещения, вкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>                        
+                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>
                             </main-form-field>
                         </main-col>
                         <main-col>
                             <main-form-field>
                                 <main-form-label>Порог освещения, выкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>                        
-                            </main-form-field>
-                        </main-col>
-                    </main-row>  
-                    <main-row>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-label>Порог освещения, вкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>                        
-                            </main-form-field>
-                        </main-col>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-label>Порог освещения, выкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>                        
+                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>
                             </main-form-field>
                         </main-col>
                     </main-row>
-                </div>    
+                    <main-row>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-label>Порог освещения, вкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>
+                            </main-form-field>
+                        </main-col>
+                        <main-col>
+                            <main-form-field>
+                                <main-form-label>Порог освещения, выкл </main-form-label>
+                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>
+                            </main-form-field>
+                        </main-col>
+                    </main-row>
+                </div>
                 <main-row style='padding: 1em 0 0 0'>
                     <main-col>
                         <main-form-field>
                             <main-form-checkbox v-model="isCaptureAutoRun">Автоматически включать и выключать камеру в соответствии с настройками порога освещения?</main-form-checkbox>
-                        </main-form-field>    
-                    </main-col>                                           
+                        </main-form-field>
+                    </main-col>
                 </main-row>
                 <main-row>
                     <main-col>
                         <main-form-field>
                             <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
                         </main-form-field>
-                    </main-col> 
+                    </main-col>
                     <main-col>
                         <main-form-field>
                             <main-form-checkbox v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
@@ -105,17 +105,17 @@
                 <main-row>
                     <main-col>
                         <div id="container"></div>
-                    </main-col>                    
-                </main-row>                        
+                    </main-col>
+                </main-row>
                 <main-row>
                     <main-col>
                         <main-button-group style="margin-top: 1em">
-                            <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>                    
-                        </main-button-group>                
+                            <main-button ref="start-stop-rec-btn" selected="selected" :click="onClickStartStopBtn">{{toggleBtnText}}</main-button>
+                        </main-button-group>
                     </main-col>
-                </main-row>                        
+                </main-row>
             </main-form>
-        </main-tab-item>   
+        </main-tab-item>
         <main-tab-item title="Видео">
             <h1>Просмотр видео</h1>
             <main-form ref="video-control-form" class="Flat" style="margin-bottom: 2em">
@@ -125,10 +125,10 @@
                 </main-form-field>
             </main-form>
             <main-button-group>
-                <main-button selected="selected" :click="onClickLoadVideoCaptureListBtn">Загрузить</main-button>                    
-            </main-button-group>            
+                <main-button selected="selected" :click="onClickLoadVideoCaptureListBtn">Загрузить</main-button>
+            </main-button-group>
             <main-table v-if="isVideoCaptureListLoaded" style="margin-top: 1em" :columns="videoCaptureRecordTblCols" :data="videoCaptureRecordTblData"></main-table>
-        </main-tab-item>    
+        </main-tab-item>
         <main-tab-item title="Фотографии">
             <h1>Просмотр снимков экрана</h1>
             <main-form ref="picture-control-form" class="Flat" style="margin-bottom: 2em">
@@ -138,31 +138,23 @@
                 </main-form-field>
             </main-form>
             <main-button-group>
-                <main-button selected="selected" :click="onClickLoadPictureCaptureListBtn">Загрузить</main-button>                    
-            </main-button-group>            
+                <main-button selected="selected" :click="onClickLoadPictureCaptureListBtn">Загрузить</main-button>
+            </main-button-group>
             <main-table v-if="isPictureCaptureListLoaded" style="margin-top: 1em" :columns="pictureCaptureRecordTblCols" :data="pictureCaptureRecordTblData"></main-table>
-        </main-tab-item>               
-        <main-tab-item title="Среда">               
+        </main-tab-item>
+        <main-tab-item title="Среда">
             <h1>Значение среды</h1>
             <main-form class="Flat">
                 <main-form-field>
-                    <main-form-label>Температура, С</main-form-label>
-                    <main-form-input readonly="readonly" v-model="metering.temp"></main-form-input>
-                </main-form-field>            
-                <main-form-field>
-                    <main-form-label>Влажность, %С</main-form-label>
-                    <main-form-input readonly="readonly" v-model="metering.humidity"></main-form-input>
-                </main-form-field>                        
-                <main-form-field>
                     <main-form-label>Освещенность, Люкс</main-form-label>
-                    <main-form-input readonly="readonly" v-model="metering.lighting"></main-form-input>
-                </main-form-field>   
+                    <main-form-input readonly="readonly" v-model="lighting"></main-form-input>
+                </main-form-field>
                 <main-form-field>
                     <main-form-label>Наличие движения</main-form-label>
                     <main-form-input readonly="readonly" :value="movement == true ? 'Да' : 'Нет'"></main-form-input>
                 </main-form-field>
             </main-form>
-        </main-tab-item>       
+        </main-tab-item>
     </main-tab>
   </div>
   <script src="js/video-capture.js"></script>
