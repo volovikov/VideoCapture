@@ -70,7 +70,7 @@ var app = new Vue({
         pictureElement: null,
         videoElement: null,
         videoStreamTrack: null,
-        imageCapture: null,
+        imageCaptureDeviceInterface: null,
         imageCaptureFn: null,
         imageCaptureInterval: 200,
         mediaRecorder: null,
@@ -128,12 +128,12 @@ var app = new Vue({
       movement: function(v) {
           var that = this;
 
-          if (v && this.imageCapture) {
+          if (v && this.imageCaptureDeviceInterface && this.isVideoSaveNow) {
               if (!this.isCaptureSavePicture) {
                   return;
               }
               this.imageCaptureFn = setInterval(function() {
-                  that.imageCapture.takePhoto()
+                  that.imageCaptureDeviceInterface.takePhoto()
                     .then(blob => {
                         that.upload.call(that, blob);
                     })
@@ -389,7 +389,7 @@ var app = new Vue({
 
       this.videoElement.srcObject = stream;
       this.videoStreamTrack = stream.getVideoTracks()[0];
-      this.imageCapture = new ImageCapture(this.videoStreamTrack);
+      this.imageCaptureDeviceInterface = new ImageCapture(this.videoStreamTrack);
 
       this.videoElement.addEventListener('loadedmetadata', function() {
         if (!that.mediaRecorder) {

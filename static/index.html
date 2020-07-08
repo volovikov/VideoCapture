@@ -68,20 +68,6 @@
                             </main-form-field>
                         </main-col>
                     </main-row>
-                    <main-row>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-label>Порог освещения, вкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStart"></main-form-input>
-                            </main-form-field>
-                        </main-col>
-                        <main-col>
-                            <main-form-field>
-                                <main-form-label>Порог освещения, выкл </main-form-label>
-                                <main-form-input v-model="threshold.forCameraStop"></main-form-input>
-                            </main-form-field>
-                        </main-col>
-                    </main-row>
                 </div>
                 <main-row style='padding: 1em 0 0 0'>
                     <main-col>
@@ -93,12 +79,12 @@
                 <main-row>
                     <main-col>
                         <main-form-field>
-                            <main-form-checkbox v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
+                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
                         </main-form-field>
                     </main-col>
                     <main-col>
                         <main-form-field>
-                            <main-form-checkbox v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
+                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
                         </main-form-field>
                     </main-col>
                </main-row>
