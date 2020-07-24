@@ -55,7 +55,7 @@ var app = new Vue({
         isVideoCaptureListLoaded: false,
         isPictureCaptureListLoaded: false,
         isCaptureSaveVideo: false,
-        isCaptureSavePicture: false,
+        isCaptureSavePicture: true,
         isCaptureAutoRun: true,
         pictureCaptureDayList: [],
         videoCaptureDayList: [],
