@@ -5,7 +5,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   -o-user-select: none;
-  user-select: none;    
+  user-select: none;
 }
 .Tips {
     display: none;
@@ -16,17 +16,17 @@
     background-image: -webkit-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
     background-image: -ms-linear-gradient(bottom, rgb(255,238,191) 1%, rgb(255,246,219) 74%);
     background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.01, rgb(255,238,191)), color-stop(0.74, rgb(255,246,219)));
-    box-shadow: inset 0 0 0 1px #fffdf6, 0 0 0 1px #e5d6a2, 2px 2px 2px 2px rgba(214, 214, 214, .4);    
+    box-shadow: inset 0 0 0 1px #fffdf6, 0 0 0 1px #e5d6a2, 2px 2px 2px 2px rgba(214, 214, 214, .4);
     padding: 12px 0;
     border-radius: 4px;
-    z-index: 101;
+    z-index: 999;
     margin-top: 10px;
     max-width: 70%;
 }
 .Tips.Open {
     display: inline-block;
     #zoom: 1;
-	#display: inline;        
+	#display: inline;
 }
 .Tips.Close {
     display: none;
@@ -47,18 +47,18 @@
     margin-left: 12px !important;
     min-height: 16px !important;
     #zoom: 1 !important;
-	#display: inline !important;   
+	#display: inline !important;
     height: auto !important;
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    line-height: 14px !important;  
+    line-height: 14px !important;
     color: #a47625 !important;
 }
 .Tips .Button.Close {
-    width: 3%;    
+    width: 3%;
     height: 15px;
-    vertical-align: top;    
+    vertical-align: top;
     float: right;
     min-width: 15px;
     padding: 0 3px;

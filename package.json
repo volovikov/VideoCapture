@@ -24,7 +24,9 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
+    "imagediff": "^1.0.8",
     "node-windows": "^1.0.0-beta.1",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "rembrandt": "^0.1.3"
   }
 }

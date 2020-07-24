@@ -223,7 +223,7 @@ var savePictureCaptureRec = function(data, callback) {
 
 app.all('*', function(req, res, next) {
    console.log('Run erase garbage procedure');
-   eraseGarbage();
+   setTimeout(eraseGarbage, 0);
    next();
 });
 app.get('/video/record/get', function(req, res) {

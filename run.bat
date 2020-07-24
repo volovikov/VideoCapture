@@ -1,2 +1,2 @@
 cd c:\VideoCapture
-node run.js
+nodemon run.js
