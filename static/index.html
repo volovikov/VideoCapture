@@ -32,7 +32,7 @@
   <div id="main-panel" style="margin: 1em auto">
     <main-message style="position: fixed; left: 10px; top: 10px; width: 300px;" v-show="isVideoCaptureSaveComplete" :text="videoCaptureBlockInfo"></main-message>
     <main-tab @click="onChangeTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
-        <main-tab-item title="Видео">
+        <main-tab-item title="Захват">
             <h1>Захват видео</h1>
             <main-form ref='main-form' class="Flat">
                 <div v-if="!isVideoSaveNow">
@@ -84,7 +84,12 @@
                     </main-col>
                     <main-col>
                         <main-form-field>
-                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePicture">Сохранять снимки экрана если есть движение?</main-form-checkbox>
+                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePictureIfMove">Сохранять снимки экрана если есть движение?</main-form-checkbox>
+                        </main-form-field>
+                    </main-col>
+                    <main-col>
+                        <main-form-field>
+                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePictureIfLight">Сохранять снимки экрана если есть свет?</main-form-checkbox>
                         </main-form-field>
                     </main-col>
                </main-row>

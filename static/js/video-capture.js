@@ -55,7 +55,8 @@ var app = new Vue({
         isVideoCaptureListLoaded: false,
         isPictureCaptureListLoaded: false,
         isCaptureSaveVideo: false,
-        isCaptureSavePicture: true,
+        isCaptureSavePictureIfMove: false,
+        isCaptureSavePictureIfLight: true,
         isCaptureAutoRun: true,
         pictureCaptureDayList: [],
         videoCaptureDayList: [],
@@ -108,6 +109,8 @@ var app = new Vue({
           this.saveMediaSettings.video.deviceId.exact = v;
       },
       lighting: function(v) {
+          var that = this;
+
           if (!this.isCaptureAutoRun) {
               return;
           }
@@ -117,6 +120,19 @@ var app = new Vue({
               if (!this.isVideoSaveNow) {
                   btn.click();
                   this.saveMeteringValue();
+              }
+              if (this.isCaptureSavePictureIfLight && this.isLightOn) {
+                this.imageCaptureFn = setInterval(function() {
+                    that.imageCaptureDeviceInterface.takePhoto()
+                      .then(blob => {
+                          that.upload.call(that, blob);
+                      })
+                      .catch(error => {
+                          console.error('takePhoto() error:', error)
+                      });
+                }, this.imageCaptureInterval);
+              } else {
+                clearInterval(this.imageCaptureFn);
               }
           } else if (v < this.threshold.forCameraStop) {
               if (this.isVideoSaveNow) {
@@ -147,6 +163,13 @@ var app = new Vue({
       }
   },
   computed: {
+    isLightOn: function() {
+        if (his.lighting >= this.threshold.forCameraStart) {
+            return true;
+        } else {
+            return false;
+        }
+    },
     formHeight: function() {
         return this.height + 90;
     },
@@ -210,11 +233,9 @@ var app = new Vue({
   },
   methods: {
     onChangeTab: function(tab, tabIndex) {
-        if (!tab.index) {
-            return;
-        } else if (tab.title == 'Видео') {
+        if (tab.title == 'Видео') {
             this.reloadVideoCaptureDayList();
-        } else if (tab.index == 'Фотографии') {
+        } else if (tab.title == 'Фотографии') {
             this.reloadPictureCaptureDayList();
         }
     },
