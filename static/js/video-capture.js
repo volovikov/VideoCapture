@@ -54,7 +54,7 @@ var app = new Vue({
         isVideoCaptureSaveComplete: false,
         isVideoCaptureListLoaded: false,
         isPictureCaptureListLoaded: false,
-        isCaptureSaveVideo: false,
+        isCaptureSaveVideo: false,        
         isCaptureSavePictureIfMove: false,
         isCaptureSavePictureIfLight: true,
         isCaptureAutoRun: true,
@@ -163,6 +163,9 @@ var app = new Vue({
       }
   },
   computed: {
+    isCaptureSavePicture: function() {
+        return  isCaptureSavePictureIfMove || isCaptureSavePictureIfLight ? true : false;
+    },
     isLightOn: function() {
         if (his.lighting >= this.threshold.forCameraStart) {
             return true;
