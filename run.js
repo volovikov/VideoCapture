@@ -83,7 +83,7 @@ app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 var databaseConfig = {
     host: 'localhost',
     user: 'root',
-    password : 'root',
+    password : '',
     database : 'videocapture',
     port: 3306,
     //socketPath: 'c:/Program Files/var/run/mysqld/mysqld.sock'

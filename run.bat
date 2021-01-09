@@ -1,2 +1,3 @@
 cd c:\VideoCapture
-nodemon run.js
+rem nodemon run.js
+"C:\Program Files\nodejs\node.exe" run.js
