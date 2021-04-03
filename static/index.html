@@ -33,9 +33,9 @@
     <main-message style="position: fixed; left: 10px; top: 10px; width: 300px;" v-show="isVideoCaptureSaveComplete" :text="videoCaptureBlockInfo"></main-message>
     <main-tab @click="onChangeTab" bordered="bordered" style="margin: 0 auto; padding-top: 1em" :style="{width: formWidth+'px', height: formHeight+'px'}">
         <main-tab-item title="Захват">
-            <h1>Захват видео</h1>
+            <h1>Захват изображения</h1>
             <main-form ref='main-form' class="Flat">
-                <div v-if="!isVideoSaveNow">
+                <div v-if="!isCameraPlayNow">
                     <main-form-field ref='video-device-selector'>
                         <main-form-label>Выберите камеру</main-form-label>
                         <main-form-select @select='onSelectVideoCamera' :list='videoCameraList'></main-form-select>
@@ -49,8 +49,8 @@
                         </main-col>
                         <main-col>
                             <main-form-field ref="video-save-interval-selector">
-                                <main-form-label>Интервал записи (сек)</main-form-label>
-                                <main-form-select @select="onSelectVideoInterval" :list='videoSaveIntervalList'></main-form-select>
+                                <main-form-label>Задержка между снимками (сек)</main-form-label>
+                                <main-form-select @select="onSelectSnapshotInterval" :list='snapshotIntervalList'></main-form-select>
                             </main-form-field>
                         </main-col>
                     </main-row>
@@ -69,6 +69,14 @@
                         </main-col>
                     </main-row>
                 </div>
+                <main-row>
+                  <main-col>
+                    <main-form-field ref="snapshot-save-method">
+                        <main-form-label>Метод создание снимок</main-form-label>
+                        <main-form-select @select="onSelectSnapshotMethodMethod" :list='snapshotMakeMethodList'></main-form-select>
+                    </main-form-field>
+                  </main-col>
+                </main-row>
                 <main-row style='padding: 1em 0 0 0'>
                     <main-col>
                         <main-form-field>
@@ -76,23 +84,6 @@
                         </main-form-field>
                     </main-col>
                 </main-row>
-                <main-row>
-                    <main-col>
-                        <main-form-field>
-                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSaveVideo">Сохранять видео на локальный диск?</main-form-checkbox>
-                        </main-form-field>
-                    </main-col>
-                    <main-col>
-                        <main-form-field>
-                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePictureIfMove">Сохранять снимки экрана если есть движение?</main-form-checkbox>
-                        </main-form-field>
-                    </main-col>
-                    <main-col>
-                        <main-form-field>
-                            <main-form-checkbox v-show="isCaptureAutoRun" v-model="isCaptureSavePictureIfLight">Сохранять снимки экрана если есть свет?</main-form-checkbox>
-                        </main-form-field>
-                    </main-col>
-               </main-row>
                 <main-row>
                     <main-col>
                         <div id="container"></div>
@@ -107,20 +98,7 @@
                 </main-row>
             </main-form>
         </main-tab-item>
-        <main-tab-item title="Видео">
-            <h1>Просмотр видео</h1>
-            <main-form ref="video-control-form" class="Flat" style="margin-bottom: 2em">
-                <main-form-field>
-                    <main-form-label>День</main-form-label>
-                    <main-form-select @select="onSelectVideoCaptureDay" name="videoCaptureDay" :list="videoCaptureDayList"></main-form-select>
-                </main-form-field>
-            </main-form>
-            <main-button-group>
-                <main-button selected="selected" :click="onClickLoadVideoCaptureListBtn">Загрузить</main-button>
-            </main-button-group>
-            <main-table v-if="isVideoCaptureListLoaded" style="margin-top: 1em" :columns="videoCaptureRecordTblCols" :data="videoCaptureRecordTblData"></main-table>
-        </main-tab-item>
-        <main-tab-item title="Фотографии">
+        <main-tab-item title="Снимки">
             <h1>Просмотр снимков экрана</h1>
             <main-form ref="picture-control-form" class="Flat" style="margin-bottom: 2em">
                 <main-form-field>

@@ -109,6 +109,13 @@ var handleDisconnect = function() {
   });
 }
 
+var getDirectories = function(path) {
+    return fs.readdirSync(path).filter(function (file) {
+      return fs.statSync(path+'/'+file).isDirectory();
+    });
+};
+var pathOffset = '.' + staticDir + pictureDir + '/';
+
 handleDisconnect();
 
 var eraseGarbage = function() {
@@ -141,11 +148,6 @@ var eraseGarbage = function() {
         d.setDate(d.getDate()-i);
         validDateArr.push([getValidYear(), getValidMonth(), getValidDay()].join('-'));
     }
-    var getDirectories = function(path) {
-        return fs.readdirSync(path).filter(function (file) {
-          return fs.statSync(path+'/'+file).isDirectory();
-        });
-    };
     var deleteFolderRecursive = function(path) {
         if (fs.existsSync(path)) {
           fs.readdirSync(path).forEach(function(file, index){
@@ -159,11 +161,10 @@ var eraseGarbage = function() {
           fs.rmdirSync(path);
         }
     };
-    var pathOffset = '.' + staticDir + videoDir + '/';
 
     getDirectories(pathOffset).forEach(function(d) {
         if (validDateArr.indexOf(d) == -1) {
-            console.log('Found old video files ' + pathOffset + d);
+            console.log('Found old pictures files ' + pathOffset + d);
             deleteFolderRecursive(pathOffset + d);
         }
     });
@@ -196,13 +197,15 @@ var getVideoCaptureDayList = function(dayDeep, callback) {
     });
 };
 var getPictureCaptureDayList = function(dayDeep, callback) {
-    query = "\n SELECT DISTINCT `s`.`value`, `s`.`key` FROM ("
-            +"\n SELECT DATE_FORMAT(`datetime`, '%D %M') AS `value`, DATE_FORMAT(`datetime`, '%Y-%m-%e') AS `key` FROM `picturecapture`"
-            +"\n WHERE `datetime` > NOW() - INTERVAL " + dayDeep + " DAY ORDER BY `datetime` ASC) AS `s` ORDER BY `s`.`key` DESC ";
+  var list = [];
 
-    connection.query(query, function(err, results) {
-        callback && callback(err, results);
-    });
+  getDirectories(pathOffset).forEach(function(d) {
+      list.push({
+        key: d,
+        value: d
+      })
+  });
+  callback && callback(list);
 };
 var saveVideoCaptureRec = function(data, callback) {
     query = "\n INSERT INTO `videocapture` (`id`,`filename`, `datetime`, `saveInterval`, `uploadDir`)"
@@ -220,7 +223,7 @@ var savePictureCaptureRec = function(data, callback) {
         callback && callback(results);
     });
 };
-
+  
 app.all('*', function(req, res, next) {
    console.log('Run erase garbage procedure');
    setTimeout(eraseGarbage, 0);
@@ -288,17 +291,11 @@ app.post('/picture/day/list', function(req, res) {
     if (typeof dd == 'undefined') {
         dd = dayDeep;
     }
-    getPictureCaptureDayList(dd, function(err, data) {
-        if (!err) {
-            res.json({
-                success: true,
-                data: data
-            });
-        } else {
-            res.json({
-                success: false
-            });
-        }
+    getPictureCaptureDayList(dd, function(data) {
+          res.json({
+              success: true,
+              data: data
+          });
     });
 });
 app.post('/video/upload', function(req, res) {

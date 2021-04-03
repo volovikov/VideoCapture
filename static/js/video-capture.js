@@ -8,10 +8,10 @@ var videoSaveIntervalList = [
   },{
     key: 30000,
     value: '30 сек',
+    selected: true
   },{
     key: 60000,
-    value: '1 мин',
-    selected: true
+    value: '1 мин'
   },{
     key: 120000,
     value: '2 мин'
@@ -46,17 +46,26 @@ var videoSizeList = [
   }
 ];
 
+var snapshotMakeMethodList = [{
+  key: 'save-if-motion-detected',
+  value: 'Сохранять снимки если есть движение'
+},{
+  key: 'save-if-light-detected',
+  value: 'Сохранять снимки если включено освещение'
+}]
+
 var app = new Vue({
   el: '#main-panel',
   data: function() {
     return {
-        isVideoSaveNow: false,
+        snapshotMakeMethodList: snapshotMakeMethodList,
+        snapshotMethod: 'save-if-motion-detected',
+        snapshotIntervalList: videoSaveIntervalList,
+        snapshotInterval: 30000,
+        isCameraPlayNow: false,
         isVideoCaptureSaveComplete: false,
         isVideoCaptureListLoaded: false,
         isPictureCaptureListLoaded: false,
-        isCaptureSaveVideo: false,        
-        isCaptureSavePictureIfMove: false,
-        isCaptureSavePictureIfLight: true,
         isCaptureAutoRun: true,
         pictureCaptureDayList: [],
         videoCaptureDayList: [],
@@ -117,11 +126,11 @@ var app = new Vue({
           var btn = this.$refs['start-stop-rec-btn'];
 
           if (v >= this.threshold.forCameraStart) {
-              if (!this.isVideoSaveNow) {
+              if (!this.isCameraPlayNow) {
                   btn.click();
                   this.saveMeteringValue();
               }
-              if (this.isCaptureSavePictureIfLight && this.isLightOn) {
+              if (this.isLightOn) {
                 this.imageCaptureFn = setInterval(function() {
                     that.imageCaptureDeviceInterface.takePhoto()
                       .then(blob => {
@@ -130,12 +139,12 @@ var app = new Vue({
                       .catch(error => {
                           console.error('takePhoto() error:', error)
                       });
-                }, this.imageCaptureInterval);
+                }, this.snapshotInterval);
               } else {
                 clearInterval(this.imageCaptureFn);
               }
           } else if (v < this.threshold.forCameraStop) {
-              if (this.isVideoSaveNow) {
+              if (this.isCameraPlayNow) {
                   btn.click();
                   this.saveMeteringValue();
               }
@@ -144,10 +153,7 @@ var app = new Vue({
       movement: function(v) {
           var that = this;
 
-          if (v && this.imageCaptureDeviceInterface && this.isVideoSaveNow) {
-              if (!this.isCaptureSavePicture) {
-                  return;
-              }
+          if (v && this.imageCaptureDeviceInterface && this.isCameraPlayNow) {
               this.imageCaptureFn = setInterval(function() {
                   that.imageCaptureDeviceInterface.takePhoto()
                     .then(blob => {
@@ -163,11 +169,8 @@ var app = new Vue({
       }
   },
   computed: {
-    isCaptureSavePicture: function() {
-        return  isCaptureSavePictureIfMove || isCaptureSavePictureIfLight ? true : false;
-    },
     isLightOn: function() {
-        if (his.lighting >= this.threshold.forCameraStart) {
+        if (this.lighting >= this.threshold.forCameraStart) {
             return true;
         } else {
             return false;
@@ -180,7 +183,7 @@ var app = new Vue({
         return this.width + 100;
     },
     toggleBtnText: function() {
-        if (this.isVideoSaveNow) {
+        if (this.isCameraPlayNow) {
             return 'Выключить';
         } else {
             return 'Включить';
@@ -231,19 +234,21 @@ var app = new Vue({
         width: this.width,
         height: this.height
     });
-    this.reloadVideoCaptureDayList();
     this.reloadPictureCaptureDayList();
   },
   methods: {
+    onSelectSnapshotMethodMethod: function(v) {
+      this.snapshotMethod = v;
+    },
+    onSelectSnapshotInterval: function(v) {
+      this.snapshotInterval = v;
+    },
     onChangeTab: function(tab, tabIndex) {
         if (tab.title == 'Видео') {
             this.reloadVideoCaptureDayList();
         } else if (tab.title == 'Фотографии') {
             this.reloadPictureCaptureDayList();
         }
-    },
-    onClickLoadVideoCaptureListBtn: function() {
-        this.reloadVideoCaptureTable();
     },
     onClickLoadPictureCaptureListBtn: function() {
         this.reloadPictureCaptureTable();
@@ -269,27 +274,6 @@ var app = new Vue({
             }
             that.pictureCaptureDayList = data;
             that.activePictureCaptureDay = data[0].key;
-        });
-    },
-    reloadVideoCaptureDayList: function() {
-        var that = this;
-
-        this.getVideoCaptureDayList(function(data) {
-            if (!data.length) {
-                return;
-            }
-            that.videoCaptureDayList = data;
-            that.activeVideoCaptureDay = data[0].key;
-        });
-    },
-    reloadVideoCaptureTable: function() {
-        var that = this;
-
-        this.getVideoCaptureRecordList(this.activeVideoCaptureDay, function(data) {
-            that.videoCaptureRecordTblData = data.map(function(r) {
-                return [r.datetime, r.saveInterval, '<a target="_blank" href="/video/' + r.uploadDir + '/' + r.filename + '">' + r.filename + '</a>'];
-            });
-            that.isVideoCaptureListLoaded = true;
         });
     },
     reloadPictureCaptureTable: function() {
@@ -342,25 +326,6 @@ var app = new Vue({
                 }
             });
     },
-    getVideoCaptureDayList: function(callback) {
-        var that = this,
-            url = '/video/day/list',
-            data = {
-            };
-
-        $.ajax({
-                url: url,
-                data: data,
-                type: 'post',
-                success: function(r) {
-                    if (!r.success) {
-                        that.errorMessage = r.error;
-                    } else {
-                        callback && callback(r.data);
-                    }
-                }
-            });
-    },
     getPictureCaptureDayList: function(callback) {
         var that = this,
             url = '/picture/day/list',
@@ -379,10 +344,6 @@ var app = new Vue({
                     }
                 }
             });
-    },
-    onSelectVideoCaptureDay: function(v) {
-        this.activeVideoCaptureDay = v.key;
-        this.isVideoCaptureListLoaded = false;
     },
     onSelectPictureCaptureDay: function(v) {
         this.activePictureCaptureDay = v.key;
@@ -404,9 +365,6 @@ var app = new Vue({
                 });
             }
         });
-    },
-    onSelectVideoInterval: function(v) {
-        this.saveInterval = v.key;
     },
     onMediaSuccess: function(stream) {
       var that = this;
@@ -439,20 +397,21 @@ var app = new Vue({
         this.videoRecordDeviceId = v.key;
     },
     onClickStartStopBtn: function() {
-        if (this.isVideoSaveNow) {
+        if (this.isCameraPlayNow) {
             if (this.mediaRecorder) {
                 this.mediaRecorder.stop();
             }
             this.videoElement.pause();
             document.getElementById('container').innerHTML = '';
-            this.isVideoSaveNow = false;
+            this.isCameraPlayNow = false;
         } else {
             this.captureUserMedia(this.onMediaSuccess, this.onMediaError);
-            this.isVideoSaveNow = true;
+            this.isCameraPlayNow = true;
         }
     },
     blobToBase64: function(blob, callback) {
         var reader = new FileReader();
+
         reader.onload = function() {
           var dataUrl = reader.result;
           var base64 = dataUrl.split(',')[1];
@@ -461,11 +420,7 @@ var app = new Vue({
         reader.readAsDataURL(blob);
     },
     upload: function(blob) {
-        if (!this.isCaptureSaveVideo && !this.isCaptureSavePicture) {
-            return;
-        }
-        var url = this.isCaptureSaveVideo
-                ? '/video/upload' : '/picture/upload';
+        var url = '/picture/upload';
 
         var that = this,
             displayTime = 10000,
