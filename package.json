@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "imagediff": "^1.0.8",
-    "node-windows": "^1.0.0-beta.1",
+    "node-windows": "^1.0.0-beta.6",
     "nodemon": "^2.0.4",
     "rembrandt": "^0.1.3"
   }
